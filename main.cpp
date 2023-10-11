@@ -1,6 +1,7 @@
 #include <Novice.h>
+#include"Jump.h"
 
-const char kWindowTitle[] = "GC1D_03_イトウシュンヤ";
+const char kWindowTitle[] = "5142";
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
