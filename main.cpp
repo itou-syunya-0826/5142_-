@@ -12,8 +12,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char keys[256] = {0};
 	char preKeys[256] = {0};	
 
-	
-
 	int TileHandle = Novice::LoadTexture("./block.png");
 
 	int BlockSize = 32; //int型変数BlockSizeを宣言し,32で初期化する
