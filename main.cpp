@@ -1,6 +1,5 @@
 #include <Novice.h>
-#include"mystruct.h"
-#include"jump.h"
+
 
 const char kWindowTitle[] = "5142";
 
