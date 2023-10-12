@@ -12,14 +12,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char keys[256] = {0};
 	char preKeys[256] = {0};	
 
-	const int MapX_Max = 20;
-	const int MapY_Max = 40;
-
 	int TileHandle = Novice::LoadTexture("./block.png");
 
 	int BlockSize = 32; //int型変数BlockSizeを宣言し,32で初期化する
 
-	int Map[MapX_Max][MapY_Max] =
+	int Map[20][40] =
 	{
 		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
 		{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -65,8 +62,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 
-		for (int y = 0; y < MapY_Max; y++) {
-			for (int x = 0; x < MapX_Max; x++) {
+		for (int y = 0; y < 20; y++) {
+			for (int x = 0; x < 40; x++) {
 				if (Map[y][x] == 1) {
 					Novice::DrawSprite(x * BlockSize, y * BlockSize, TileHandle, 1.0f, 1.0f, 0.0f, WHITE);
 				}
