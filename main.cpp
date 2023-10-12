@@ -24,7 +24,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		float scale;
 		float speed;
 	}Player;
-
+	
 	Player player{
 		{100.0f,0.0f},
 		{0.0f,0.0f},
