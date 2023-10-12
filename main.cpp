@@ -1,16 +1,16 @@
 #include <Novice.h>
 
-const char kWindowTitle[] = "GC1D_03_イトウシュンヤ";
+const char kWindowTitle[] = "5142";
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// ライブラリの初期化
-	Novice::Initialize(kWindowTitle, 1280, 720);
+	Novice::Initialize(kWindowTitle, 1280, 640);
 
 	// キー入力結果を受け取る箱
 	char keys[256] = {0};
-	char preKeys[256] = {0};
+	char preKeys[256] = {0};	
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
