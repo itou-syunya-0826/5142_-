@@ -205,7 +205,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 		}
 
-		Novice::DrawSprite((int)monitorX - 384, (int)newposY, sample, player.scale, player.scale, 0.0f, WHITE);
+		Novice::DrawSprite((int)monitorX - 512, (int)newposY, sample, player.scale, player.scale, 0.0f, WHITE);
 
 		Novice::DrawSprite((int)boss.position.x, (int)NewBossPosY, BossHandle, 1.0f, 1.0f, 0.0f, boss.color);
 
