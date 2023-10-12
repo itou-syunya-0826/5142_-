@@ -144,9 +144,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 
 		//長押し
-		if (keys[DIK_SPACE]/*&&HipDrop==1*/) {
-			player.position.y -= player.velocity.y;
-		}
+		//if (keys[DIK_SPACE]/*&&HipDrop==1*/) {
+		//	player.position.y -= player.velocity.y;
+		//}
 
 
 
