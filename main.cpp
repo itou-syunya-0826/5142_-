@@ -17,21 +17,28 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		float y;
 	}Vecter2;
 
-	typedef struct Player {
-		Vector2 position;
-		Vector2 velocity;//速度
-		Vector2 acceleration;//加速度
-		float scale;
-		float speed;
-	}Player;
 
+	typedef struct Player {
+		Vector2 position;//X,100 Y,0
+		Vector2 velocity;//速度0
+		Vector2 acceleration;//加速度-0.8
+		float scale;//1
+		float speed;//20
+	}Player;
 	Player player{
 		{100.0f,0.0f},
 		{0.0f,0.0f},
 		{0.0f,-0.8f},
 		1.0f,
-		5.0f
+		20.0f
 	};
+	int sample = Novice::LoadTexture("./sample.png");//プレイヤーの描画
+
+	int Jampsystem = 0;
+	int IsJump = 0;
+	int isjampTimer = 0;
+	int jampTimer = 25;//ジャンプのラグ
+	float newposY = 0;
 
 	typedef struct Boss {
 		Vector2 position;
@@ -45,15 +52,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		WHITE
 	};
 
-	bool IsPlayer = false;
-	float newposY = 0;
-	float JumpNum = 0;
-	float CoolDown = 180;
-	float HipDrop = 0;
-
 	float NewBossPosY = 0;
 
-	int sample = Novice::LoadTexture("./sample.png");
+	int ScrollSpeedX = 5;
 
 	int TileHandle = Novice::LoadTexture("./block.png");
 
@@ -119,10 +120,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		
 		//背景のスクロール
 
-		worldPosX += int(player.speed);//ワールド座標を右方向に動かす
-		scrollX += int(player.speed);//スクロール値も更新する
+		worldPosX += ScrollSpeedX;//ワールド座標を右方向に動かす
+		scrollX += ScrollSpeedX;//スクロール値も更新する
 
-		boss.position.x -= int(boss.speed);
+		boss.position.x -= ScrollSpeedX;
 
 		//BOSSの登場処理
 		if (boss.position.x == 1150) {
@@ -130,7 +131,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 
 		if (worldPosX > 7623) {
-			scrollX -= int(player.speed);
+			scrollX -= ScrollSpeedX;
 		}
 
 		if (worldPosX > 7040 || worldPosX > 7680) {//ワールド座標が3200かつ3840の場合
@@ -140,47 +141,63 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		monitorX = worldPosX - scrollX;
 
 		if (scrollX == 6400) {
-			player.speed = 0;
+			ScrollSpeedX = 0;
 		}
 
-		
-
 		//二段ジャンプ
-
-		if (JumpNum == 0 || JumpNum == 1) {
-			if (keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {
-				IsPlayer = true;
-				player.velocity.y = 18.0f;
-				JumpNum += 1;
+		if (IsJump == 0 || IsJump == 1) {//ジャンプ０回と１回の時に
+			if (isjampTimer == 0) {//ジャンプラグ
+				if (keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {//ジャンプ押したら
+					Jampsystem = 1;//ジャンプ
+					player.velocity.y = 19.0;
+					IsJump += 1;
+					isjampTimer = 1;//ジャンプのラグ計算開始
+				}
 			}
 		}
 
-		if (JumpNum == 2) {
-			CoolDown--;
-			HipDrop += 1;
+		//ジャンプのラグ
+		if (isjampTimer == 1) {
+			jampTimer--;//25フレーム
 		}
 
-		if (CoolDown == 0) {
-			JumpNum = 0;
-			CoolDown = 180;
+		if (jampTimer == 0) {//ラグタイマーが終わったら
+			isjampTimer = 0;//ラグタイマー変数を0に戻す
+			jampTimer = 25;//ラグタイマーを25フレームに戻す
 		}
 
-		if (IsPlayer == true) {
+		//2回目のジャンプ
+		if (IsJump == 2) {
+			if (isjampTimer == 0) {
+				if (keys[DIK_SPACE]) {//長押しでヒップドロップ
+					player.position.y -= player.speed;
+				}
+			}
+
+		}
+
+
+		//ジャンプしたら
+		if (Jampsystem == 1) {//ジャンプの仕組み
 			player.velocity.y += player.acceleration.y;
 			player.position.y += player.velocity.y;
 		}
 
-		if (player.position.y <= player.scale) {
+		//謎---ジャンプして元の位置に戻すためのだった
+		if (player.position.y < player.scale) {
 			player.position.y = player.scale;
+			IsJump = 0;//元の位置に戻ったらジャンプ０
 		}
 
 		newposY = (player.position.y - 480) * -1;//ここでplayerのY座標を決める
 		NewBossPosY = (boss.position.y - 415) * -1;//ここでplayerのY座標を決める
 
-		Novice::ScreenPrintf(100, 100, "JumpNum=%f", JumpNum);
-		Novice::ScreenPrintf(100, 130, "Cooldown=%f", CoolDown);
+		//値確認
+		Novice::ScreenPrintf(100, 100, "isJump=%d", IsJump);
+		Novice::ScreenPrintf(100, 130, "isjampTimer=%d", isjampTimer);
+		Novice::ScreenPrintf(100, 160, "jampTimer=%d", jampTimer);
 
-		Novice::ScreenPrintf(100, 160, "boss.position.x = %f", boss.position.x);
+		Novice::ScreenPrintf(100, 190, "boss.position.x = %f", boss.position.x);
 
 		///
 		/// ↑更新処理ここまで
