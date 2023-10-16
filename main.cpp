@@ -1,4 +1,5 @@
 #include <Novice.h>
+#include <stdlib.h>
 
 const char kWindowTitle[] = "5142";
 
@@ -52,11 +53,30 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		WHITE
 	};
 
+	typedef struct BossBullet {
+		Vector2 position;
+		float speed;
+		float radius;
+		unsigned int color;
+		bool isShot;
+	}BossBullet;
+
+	const int Max = 5;
+	BossBullet bossBullet[Max];
+	for (int i = 0; i < Max; i++) {
+		bossBullet[i].position.x = 0.0f;
+		bossBullet[i].position.y = -10.0f;
+		bossBullet[i].speed = 7.0f;
+		bossBullet[i].radius = 10.0f;
+		bossBullet[i].color = GREEN;
+		bossBullet[i].isShot = false;
+	}
+
 	float NewBossPosY = 0;
 
 	int ScrollSpeedX = 5;
 
-	int TileHandle = Novice::LoadTexture("./block.png");
+	/*int TileHandle = Novice::LoadTexture("./block.png");*/
 
 	int BackGround[6];
 	BackGround[0] = Novice::LoadTexture("./bg1.png");
@@ -68,7 +88,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	int BossHandle = Novice::LoadTexture("./Boss1.png");
 
-	int BlockSize = 32; //int型変数BlockSizeを宣言し,32で初期化する
+	//int BlockSize = 32; //int型変数BlockSizeを宣言し,32で初期化する
 
 	int worldPosX = 640;//ワールドから見た自機のX座標を640で初期化する
 
@@ -76,32 +96,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	int monitorX = worldPosX - scrollX;//ワールド座標とスクロール値を引いた値をモニターから見た自分の座標に代入する
 
-	
+	int BossBulletCoolTimer = 15;
 
-	int Map[20][40] =
-	{
-		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-		{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-		{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-	
-	};
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -128,6 +124,38 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		//BOSSの登場処理
 		if (boss.position.x == 1150) {
 			boss.speed = 0;
+		}
+
+		if (boss.position.x == 1150) {
+			if (BossBulletCoolTimer > 0) {
+				BossBulletCoolTimer--;
+			}
+			else {
+				BossBulletCoolTimer = 15;
+			}
+
+			if (BossBulletCoolTimer <= 0) {
+				for (int i = 0; i < Max; i++) {
+					if (bossBullet[i].isShot == false) {
+						bossBullet[i].isShot = true;
+
+						bossBullet[i].position.x = boss.position.x;
+						bossBullet[i].position.y = boss.position.y + 485.0f + rand() % 51 - 25;
+						break;
+					}
+				}
+			}
+		}
+
+		for (int i = 0; i < Max; i++) {
+			if (bossBullet[i].isShot == true) {
+				bossBullet[i].position.x -= bossBullet[i].speed;
+
+				if (bossBullet[i].position.x <= -54) {
+					bossBullet[i].isShot = false;
+					break;
+				}
+			}
 		}
 
 		if (worldPosX > 7623) {
@@ -199,6 +227,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		Novice::ScreenPrintf(100, 190, "boss.position.x = %f", boss.position.x);
 
+		Novice::ScreenPrintf(100, 220, "worldPosX = %d", worldPosX);
+
 		///
 		/// ↑更新処理ここまで
 		///
@@ -214,17 +244,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Novice::DrawSprite(5120 - scrollX, 0, BackGround[4], 1.0f, 1.0f, 0.0f, WHITE);
 		Novice::DrawSprite(6400 - scrollX, 0, BackGround[5], 1.0f, 1.0f, 0.0f, WHITE);
 
-		for (int y = 0; y < 20; y++) {
-			for (int x = 0; x < 40; x++) {
-				if (Map[y][x] == 1) {
-					Novice::DrawSprite(x * BlockSize, y * BlockSize, TileHandle, 1.0f, 1.0f, 0.0f, WHITE);
-				}
-			}
-		}
-
 		Novice::DrawSprite((int)monitorX - 512, (int)newposY, sample, player.scale, player.scale, 0.0f, WHITE);
 
 		Novice::DrawSprite((int)boss.position.x, (int)NewBossPosY, BossHandle, 1.0f, 1.0f, 0.0f, boss.color);
+
+		for (int i = 0; i < Max; i++) {
+			if (bossBullet[i].isShot == true) {
+				Novice::DrawEllipse((int)bossBullet[i].position.x, (int)bossBullet[i].position.y, 
+					                (int)bossBullet[i].radius , (int)bossBullet[i].radius ,
+					                 0.0f, (int)bossBullet[i].color, kFillModeSolid);
+			}
+		}
 
 		///
 		/// ↑描画処理ここまで
