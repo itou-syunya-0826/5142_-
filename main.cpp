@@ -90,15 +90,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		bossBullet[i].position.y = -10.0f;
 		bossBullet[i].speed = 7.0f;
 		bossBullet[i].radius = 10.0f;
-		bossBullet[i].color = GREEN;
+		bossBullet[i].color = WHITE;
 		bossBullet[i].isShot = false;
 	}
 
 	float NewBossPosY = 0;
 
 	int ScrollSpeedX = 5;
-
-	/*int TileHandle = Novice::LoadTexture("./block.png");*/
 
 	int BackGround[6];
 	BackGround[0] = Novice::LoadTexture("./bg1.png");
@@ -109,6 +107,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	BackGround[5] = Novice::LoadTexture("./bg6.png");
 
 	int BossHandle = Novice::LoadTexture("./Boss1.png");
+
+	int BossBulletHandle = Novice::LoadTexture("./tama.png");
 
 	//int BlockSize = 32; //int型変数BlockSizeを宣言し,32で初期化する
 
@@ -162,13 +162,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					if (bossBullet[i].isShot == false) {
 						bossBullet[i].isShot = true;
 
-						bossBullet[i].position.x = boss.position.x;
-						bossBullet[i].position.y = boss.position.y + 485.0f + rand() % 400 - 350;
+						bossBullet[i].position.x = boss.position.x - 15.0f;
+						bossBullet[i].position.y = boss.position.y + 468.0f + rand() % 400 - 350;
 						break;
 					}
 				}
 			}
 		}
+
 
 		for (int i = 0; i < Max2; i++) {
 			if (bossBullet[i].isShot == true) {
@@ -319,9 +320,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		for (int i = 0; i < Max2; i++) {
 			if (bossBullet[i].isShot == true) {
-				Novice::DrawEllipse((int)bossBullet[i].position.x, (int)bossBullet[i].position.y, 
-					                (int)bossBullet[i].radius , (int)bossBullet[i].radius ,
-					                 0.0f, (int)bossBullet[i].color, kFillModeSolid);
+				Novice::DrawSprite((int)bossBullet[i].position.x, (int)bossBullet[i].position.y, 
+					                BossBulletHandle,1,1,0.0f, (int)bossBullet[i].color);
 			}
 		}
 
