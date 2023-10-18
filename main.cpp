@@ -24,7 +24,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Vector2 position;//X,100 Y,0
 		Vector2 velocity;//速度0
 		Vector2 acceleration;//加速度-0.8
-		float radius;
 		float scale;//1
 		float speed;//20
 	}Player;
@@ -34,7 +33,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		{100.0f,0.0f},
 		{0.0f,0.0f},
 		{0.0f,-0.8f},
-		64.0f,
 		1.0f,
 		20.0f
 	};
