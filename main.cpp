@@ -1,12 +1,12 @@
 #include <Novice.h>
 
-const char kWindowTitle[] = "5142_飛べや";
+const char kWindowTitle[] = "5152_飛べや";
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// ライブラリの初期化
-	Novice::Initialize(kWindowTitle, 1280, 640);
+	Novice::Initialize(kWindowTitle, 1280, 720);
 
 	// キー入力結果を受け取る箱
 	char keys[256] = {0};
@@ -225,11 +225,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↑更新処理ここまで
 		///
 
-		
 		///
 		/// ↓描画処理ここから
 		///
-		
+
 		//値確認
 		Novice::ScreenPrintf(100, 100, "isJump=%d", IsJump);
 		Novice::ScreenPrintf(100, 130, "isjampTimer=%d", isjampTimer);
