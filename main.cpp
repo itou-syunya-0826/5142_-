@@ -13,23 +13,28 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	char keys[256] = {0};
 	char preKeys[256] = {0};	
 
+	//Vector2構造体の宣言
 	typedef struct Vector2 {
 		float x;
 		float y;
 	}Vecter2;
 
-
+	//Player構造体の宣言
 	typedef struct Player {
 		Vector2 position;//X,100 Y,0
 		Vector2 velocity;//速度0
 		Vector2 acceleration;//加速度-0.8
+		float radius;
 		float scale;//1
 		float speed;//20
 	}Player;
+
+	//Player構造体の初期化
 	Player player{
 		{100.0f,0.0f},
 		{0.0f,0.0f},
 		{0.0f,-0.8f},
+		64.0f,
 		1.0f,
 		20.0f
 	};
@@ -41,6 +46,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int jampTimer = 25;//ジャンプのラグ
 	float newposY = 0;
 
+	//スクロール時のBullet構造体の宣言===================================================================
 	typedef struct Bullet {
 
 		Vector2 position;
@@ -51,7 +57,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	}Bullet;
 
-	const int Max = 7;
+	//スクロール時のBullet構造体の初期化================================================================
+
+	const int Max = 7;//int型変数Maxを宣言し,値を7で初期化する
 	Bullet bullet[Max];
 	for (int i = 0; i < Max; i++) {
 		bullet[i].position.x = 0.0f;
@@ -62,19 +70,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		bullet[i].isShot = false;
 	}
 
+	//Boss構造体の宣言==================================================================================
 	typedef struct Boss {
 		Vector2 position;
 		float speed;
 		unsigned int color;
 	}Boss;
 
+	//Boss構造体の初期化================================================================================
 	Boss boss{
 		{7550.0f,0.0f},
 		5.0f,
 		WHITE
 	};
 
-	//Bossの弾の構造体の宣言
+	//Bossの弾の構造体の宣言============================================================================
 	typedef struct BossBullet {
 		Vector2 position;
 		float speed;
@@ -83,7 +93,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		bool isShot;
 	}BossBullet;
 
-	const int Max2 = 5;
+	//Bossの弾の構造体の初期化==========================================================================
+
+	const int Max2 = 5;//int型変数Max2を宣言し,値を5で固定する
 	BossBullet bossBullet[Max2];
 	for (int i = 0; i < Max2; i++) {
 		bossBullet[i].position.x = 0.0f;
@@ -96,9 +108,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	float NewBossPosY = 0;
 
-	int ScrollSpeedX = 5;
+	int ScrollSpeedX = 5;//背景が動く速さ
 
-	int BackGround[6];
+	int BackGround[6];//int型配列BackGroundを要素数6で宣言し、LoadTextureで背景画像を6つ読み込む
 	BackGround[0] = Novice::LoadTexture("./bg1.png");
 	BackGround[1] = Novice::LoadTexture("./bg2.png");
 	BackGround[2] = Novice::LoadTexture("./bg3.png");
@@ -107,10 +119,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	BackGround[5] = Novice::LoadTexture("./bg6.png");
 
 	int BossHandle = Novice::LoadTexture("./Boss1.png");
+	//int型変数BossHandleを宣言し、LoadTextureでBOSS画像を読み込む
 
 	int BossBulletHandle = Novice::LoadTexture("./tama.png");
-
-	//int BlockSize = 32; //int型変数BlockSizeを宣言し,32で初期化する
+	//int型変数BossBulletHandleを宣言し、LoadTextureでBOSSの弾を読み込む
 
 	int worldPosX = 640;//ワールドから見た自機のX座標を640で初期化する
 
@@ -119,8 +131,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int monitorX = worldPosX - scrollX;//ワールド座標とスクロール値を引いた値をモニターから見た自分の座標に代入する
 
 	int BossBulletCoolTimer = 15;
+	//Bossの弾のクールタイムを15に設定する
 
 	int BulletCoolTimer = 15;
+	//スクロール時の弾のクールタイムを15に設定する
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -142,13 +156,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		worldPosX += ScrollSpeedX;//ワールド座標を右方向に動かす
 		scrollX += ScrollSpeedX;//スクロール値も更新する
 
-		boss.position.x -= ScrollSpeedX;
+		boss.position.x -= boss.speed;
+		//BOSSのX座標をスピード5で左に動かす
 
 		//BOSSの登場処理
-		if (boss.position.x == 1150) {
-			boss.speed = 0;
+		if (boss.position.x == 1150) {//ボスのX座標を1150まで到達したら
+			boss.speed = 0;//ボスのスピードを0にする
 		}
 
+
+		//ボスの複数弾処理==============================================================================
 		if (boss.position.x == 1150) {
 			if (BossBulletCoolTimer > 0) {
 				BossBulletCoolTimer--;
@@ -182,6 +199,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 		}
 
+		//背景のスクロール処理==========================================================================
 		if (worldPosX > 7623) {
 			scrollX -= ScrollSpeedX;
 		}
@@ -192,10 +210,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		monitorX = worldPosX - scrollX;
 
-		if (scrollX == 6400) {
-			ScrollSpeedX = 0;
+		if (scrollX == 6400) {//スクロール値が6400まで到達したら
+			ScrollSpeedX = 0;//スクロールのスピードを0にする
 		}
 
+		//スクロール時の複数弾の処理====================================================================
 		if (worldPosX <= 7040) {
 			if (BulletCoolTimer > 0) {
 				BulletCoolTimer--;
@@ -217,22 +236,26 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 		}
 
-		for (int i = 0; i < Max; i++) {
-			if (bullet[i].isShot == true) {
+		for (int i = 0; i < Max; i++) {//for文処理
+			if (bullet[i].isShot == true) {//bullet[i].isShotがtrueだったら
 				bullet[i].position.x -= bullet[i].speed;
+				//スクロール時の弾を左方向に動かす
 
-				if (bullet[i].position.x <= 0) {
-					bullet[i].isShot = false;
+				if (bullet[i].position.x <= 0) {//スクロール時の弾のX座標が0まで到達したら
+					bullet[i].isShot = false;//スクロール時の弾のフラグをfalseにする
 					break;
 				}
 			}
 		}
 
-		if (worldPosX >= 7040) {
+		if (worldPosX >= 7040) {//WorldPosXが7040以上だったら
 			for (int i = 0; i < Max; i++) {
 				bullet[i].isShot = false;
+				//スクロール時の弾のフラグをfalseに設定する
 			}
 		}
+
+		//===================================<プレイヤーのジャンプ処理>=================================
 
 		//二段ジャンプ
 		if (IsJump == 0 || IsJump == 1) {//ジャンプ０回と１回の時に
@@ -315,6 +338,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				Novice::DrawEllipse(int(bullet[i].position.x), int(bullet[i].position.y),
 					                int(bullet[i].radius), int(bullet[i].radius), 
 					                0.0f, bullet[i].color, kFillModeSolid);
+				//for文を使用し、bullet[i].isShotがTrueだった場合、DrawSpriteで画像を描画する
 			}
 		}
 
@@ -322,6 +346,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (bossBullet[i].isShot == true) {
 				Novice::DrawSprite((int)bossBullet[i].position.x, (int)bossBullet[i].position.y, 
 					                BossBulletHandle,1,1,0.0f, (int)bossBullet[i].color);
+				//for文を使用し、bossBullet[i].isShotがTrueだった場合、DrawSpriteで画像を描画する
 			}
 		}
 
