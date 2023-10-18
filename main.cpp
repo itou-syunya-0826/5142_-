@@ -41,6 +41,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int jampTimer = 25;//ジャンプのラグ
 	float newposY = 0;
 
+	typedef struct Bullet {
+
+		Vector2 position;
+		float radius;
+		float speed;
+		unsigned int color;
+		bool isShot;
+
+	}Bullet;
+
+	const int Max = 7;
+	Bullet bullet[Max];
+	for (int i = 0; i < Max; i++) {
+		bullet[i].position.x = 0.0f;
+		bullet[i].position.y = -10.0f;
+		bullet[i].radius = 10.0f;
+		bullet[i].speed = 7.0f;
+		bullet[i].color = WHITE;
+		bullet[i].isShot = false;
+	}
+
 	typedef struct Boss {
 		Vector2 position;
 		float speed;
@@ -53,6 +74,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		WHITE
 	};
 
+	//Bossの弾の構造体の宣言
 	typedef struct BossBullet {
 		Vector2 position;
 		float speed;
@@ -61,9 +83,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		bool isShot;
 	}BossBullet;
 
-	const int Max = 5;
-	BossBullet bossBullet[Max];
-	for (int i = 0; i < Max; i++) {
+	const int Max2 = 5;
+	BossBullet bossBullet[Max2];
+	for (int i = 0; i < Max2; i++) {
 		bossBullet[i].position.x = 0.0f;
 		bossBullet[i].position.y = -10.0f;
 		bossBullet[i].speed = 7.0f;
@@ -98,6 +120,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	int BossBulletCoolTimer = 15;
 
+	int BulletCoolTimer = 15;
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -135,19 +158,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			if (BossBulletCoolTimer <= 0) {
-				for (int i = 0; i < Max; i++) {
+				for (int i = 0; i < Max2; i++) {
 					if (bossBullet[i].isShot == false) {
 						bossBullet[i].isShot = true;
 
 						bossBullet[i].position.x = boss.position.x;
-						bossBullet[i].position.y = boss.position.y + 485.0f + rand() % 51 - 25;
+						bossBullet[i].position.y = boss.position.y + 485.0f + rand() % 400 - 350;
 						break;
 					}
 				}
 			}
 		}
 
-		for (int i = 0; i < Max; i++) {
+		for (int i = 0; i < Max2; i++) {
 			if (bossBullet[i].isShot == true) {
 				bossBullet[i].position.x -= bossBullet[i].speed;
 
@@ -170,6 +193,44 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		if (scrollX == 6400) {
 			ScrollSpeedX = 0;
+		}
+
+		if (worldPosX <= 7040) {
+			if (BulletCoolTimer > 0) {
+				BulletCoolTimer--;
+			}
+			else {
+				BulletCoolTimer = 15;
+			}
+
+			if (BulletCoolTimer <= 0) {
+				for (int i = 0; i < Max; i++) {
+					if (bullet[i].isShot == false) {
+						bullet[i].isShot = true;
+
+						bullet[i].position.x = 1270.0f;
+						bullet[i].position.y = 500.0f + rand() % 400 - 350;
+						break;
+					}
+				}
+			}
+		}
+
+		for (int i = 0; i < Max; i++) {
+			if (bullet[i].isShot == true) {
+				bullet[i].position.x -= bullet[i].speed;
+
+				if (bullet[i].position.x <= 0) {
+					bullet[i].isShot = false;
+					break;
+				}
+			}
+		}
+
+		if (worldPosX >= 7040) {
+			for (int i = 0; i < Max; i++) {
+				bullet[i].isShot = false;
+			}
 		}
 
 		//二段ジャンプ
@@ -225,9 +286,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Novice::ScreenPrintf(100, 130, "isjampTimer=%d", isjampTimer);
 		Novice::ScreenPrintf(100, 160, "jampTimer=%d", jampTimer);
 
-		Novice::ScreenPrintf(100, 190, "boss.position.x = %f", boss.position.x);
-
-		Novice::ScreenPrintf(100, 220, "worldPosX = %d", worldPosX);
+		
+		Novice::ScreenPrintf(100, 190, "worldPosX = %d", worldPosX);
+		Novice::ScreenPrintf(100, 220, "monitorX = %d", monitorX);
 
 		///
 		/// ↑更新処理ここまで
@@ -237,7 +298,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		/// ↓描画処理ここから
 		///
 
-		Novice::DrawSprite(0 - scrollX, 0, BackGround[0], 1.0f, 1.0f, 0.0f, WHITE);
+		Novice::DrawSprite(0 - scrollX,  0, BackGround[0], 1.0f, 1.0f, 0.0f, WHITE);
 		Novice::DrawSprite(1280 - scrollX, 0, BackGround[1], 1.0f, 1.0f, 0.0f, WHITE);
 		Novice::DrawSprite(2560 - scrollX, 0, BackGround[2], 1.0f, 1.0f, 0.0f, WHITE);
 		Novice::DrawSprite(3840 - scrollX, 0, BackGround[3], 1.0f, 1.0f, 0.0f, WHITE);
@@ -249,6 +310,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Novice::DrawSprite((int)boss.position.x, (int)NewBossPosY, BossHandle, 1.0f, 1.0f, 0.0f, boss.color);
 
 		for (int i = 0; i < Max; i++) {
+			if (bullet[i].isShot == true) {
+				Novice::DrawEllipse(int(bullet[i].position.x), int(bullet[i].position.y),
+					                int(bullet[i].radius), int(bullet[i].radius), 
+					                0.0f, bullet[i].color, kFillModeSolid);
+			}
+		}
+
+		for (int i = 0; i < Max2; i++) {
 			if (bossBullet[i].isShot == true) {
 				Novice::DrawEllipse((int)bossBullet[i].position.x, (int)bossBullet[i].position.y, 
 					                (int)bossBullet[i].radius , (int)bossBullet[i].radius ,
