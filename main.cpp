@@ -132,6 +132,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int BossBulletHandle = Novice::LoadTexture("./tama.png");
 	//int型変数BossBulletHandleを宣言し、LoadTextureでBOSSの弾を読み込む
 
+	int BulletHandle = Novice::LoadTexture("./scrollBullet.png");
+
 	int worldPosX = 640;//ワールドから見た自機のX座標を640で初期化する
 
 	int scrollX = 0;//ワールド座標のスクロール値を0で初期化する
@@ -436,9 +438,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			for (int i = 0; i < Max; i++) {
 				if (bullet[i].isShot == true) {
-					Novice::DrawEllipse(int(bullet[i].position.x), int(bullet[i].position.y),
-						int(bullet[i].radius) , int(bullet[i].radius),
-						0.0f, bullet[i].color, kFillModeSolid);
+					Novice::DrawSprite(int(bullet[i].position.x), int(bullet[i].position.y), BulletHandle, 1, 1, 0.0f, bullet[i].color);
 					//for文を使用し、bullet[i].isShotがTrueだった場合、DrawSpriteで画像を描画する
 				}
 			}
