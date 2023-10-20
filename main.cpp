@@ -33,8 +33,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Vector2 position;//X,100 Y,0
 		Vector2 velocity;//速度0
 		Vector2 acceleration;//加速度-0.8
-		float Width;
-		float Height;
 		float radius;
 		float scale;//1
 		float speed;//20
@@ -46,9 +44,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		{100.0f,0.0f},
 		{0.0f,0.0f},
 		{0.0f,-0.8f},
-		8.0f,
-		16.0f,
-		20.0f,
+		14.0f,
 		1.0f,
 		20.0f,
 	};
@@ -64,8 +60,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	typedef struct Bullet {
 
 		Vector2 position;
-		float Width;
-		float Height;
 		float radius;
 		float speed;
 		unsigned int color;
@@ -80,8 +74,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	for (int i = 0; i < Max; i++) {
 		bullet[i].position.x = 0.0f;
 		bullet[i].position.y = -10.0f;
-		bullet[i].Width = 8.0f;
-		bullet[i].Height = 16.0f;
 		bullet[i].radius = 10.0f;
 		bullet[i].speed = 7.0f;
 		bullet[i].color = WHITE;
@@ -250,7 +242,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					Distance = sqrtf((bullet[i].position.x - player.position.x) * (bullet[i].position.x - player.position.x) +
 						             (bullet[i].position.y - newposY) * (bullet[i].position.y - newposY));
 
-					if (Distance <= player.Width + bullet[i].Height + player.Height + bullet[i].Width) {
+					if (Distance <= player.radius + bullet[i].radius + player.radius + bullet[i].radius) {
 						bullet[i].color = BLACK;
 					}
 					else {
