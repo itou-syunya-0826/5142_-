@@ -33,10 +33,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Vector2 position;//X,100 Y,0
 		Vector2 velocity;//速度0
 		Vector2 acceleration;//加速度-0.8
+		float Width;
+		float Height;
 		float radius;
 		float scale;//1
 		float speed;//20
-		float distance;
+		
 	}Player;
 
 	//Player構造体の初期化
@@ -44,10 +46,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		{100.0f,0.0f},
 		{0.0f,0.0f},
 		{0.0f,-0.8f},
-		25.0f,
+		8.0f,
+		16.0f,
+		20.0f,
 		1.0f,
 		20.0f,
-		0.0f
 	};
 	int sample = Novice::LoadTexture("./sample.png");//プレイヤーの描画
 
@@ -61,6 +64,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	typedef struct Bullet {
 
 		Vector2 position;
+		float Width;
+		float Height;
 		float radius;
 		float speed;
 		unsigned int color;
@@ -75,7 +80,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	for (int i = 0; i < Max; i++) {
 		bullet[i].position.x = 0.0f;
 		bullet[i].position.y = -10.0f;
-		bullet[i].radius = 30.0f;
+		bullet[i].Width = 8.0f;
+		bullet[i].Height = 16.0f;
+		bullet[i].radius = 10.0f;
 		bullet[i].speed = 7.0f;
 		bullet[i].color = WHITE;
 		bullet[i].isShot = false;
@@ -142,11 +149,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int BossBulletCoolTimer = 15;
 	//Bossの弾のクールタイムを15に設定する
 
-	int BulletCoolTimer = 15;
+	int BulletCoolTimer = 10;
 	//スクロール時の弾のクールタイムを15に設定する
 
 	int Scene = 0;
 	//シーン切り替え用の変数Sceneを宣言し,0で初期化する
+
+	float Distance = 0.0f;
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -201,7 +210,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					BulletCoolTimer--;
 				}
 				else {
-					BulletCoolTimer = 15;
+					BulletCoolTimer = 10;
 				}
 
 				if (BulletCoolTimer <= 0) {
@@ -233,6 +242,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				for (int i = 0; i < Max; i++) {
 					bullet[i].isShot = false;
 					//スクロール時の弾のフラグをfalseに設定する
+				}
+			}
+
+			for (int i = 0; i < Max; i++) {
+				if (bullet[i].isShot == true) {
+					Distance = sqrtf((bullet[i].position.x - player.position.x) * (bullet[i].position.x - player.position.x) +
+						             (bullet[i].position.y - newposY) * (bullet[i].position.y - newposY));
+
+					if (Distance <= player.Width + bullet[i].Height + player.Height + bullet[i].Width) {
+						bullet[i].color = BLACK;
+					}
+					else {
+						bullet[i].color = WHITE;
+					}
 				}
 			}
 
@@ -422,7 +445,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			for (int i = 0; i < Max; i++) {
 				if (bullet[i].isShot == true) {
 					Novice::DrawEllipse(int(bullet[i].position.x), int(bullet[i].position.y),
-						int(bullet[i].radius) / 3, int(bullet[i].radius) / 3,
+						int(bullet[i].radius) , int(bullet[i].radius),
 						0.0f, bullet[i].color, kFillModeSolid);
 					//for文を使用し、bullet[i].isShotがTrueだった場合、DrawSpriteで画像を描画する
 				}
