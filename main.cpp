@@ -23,6 +23,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		GAMEOVER,
 	};
 
+	OneButton Scene = TITLE;
+
 	//Vector2構造体の宣言
 	typedef struct Vector2 {
 		float x;
@@ -117,6 +119,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//int型変数BossHandleを宣言し、LoadTextureでBOSS画像を読み込む
 
 	int BossBulletHandle = Novice::LoadTexture("./tama.png");
+	
 	//int型変数BossBulletHandleを宣言し、LoadTextureでBOSSの弾を読み込む
 
 	int BulletHandle = Novice::LoadTexture("./tama_sample_green.png");
@@ -132,14 +135,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int BulletCoolTimer = 10;
 	//スクロール時の弾のクールタイムを15に設定する
 
-	int Scene = 0;
-	//シーン切り替え用の変数Sceneを宣言し,0で初期化する
-
 	float Distance = 0.0f;//スクロール時の弾の当たり判定用の変数を用意
-
-	/*float Distance1 = 0.0f;
-	float Distance2 = 0.0f;
-	float Distance3 = 0.0f;*/
 
 	int BulletAttack = 1;
 	int playerHp = 5;
@@ -151,7 +147,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	BossBullet bullet1{
 		{0,0},
 		1.0f,
-		10.0f
+		10.0f,
 	};
 
 	BossBullet bullet2{
@@ -610,20 +606,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 				//==========================================<Bossの弾の更新処理 ここまで>==========================================
 
-				////=========================================<Bossの弾を跳ね返す処理　其の1>=========================================
-				//if (IsBoss1 == true) {
-				//	if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 == true) {
-
-				//		Distance1 = sqrtf((bullet1.position.x - player.position.x) * (bullet1.position.x - player.position.x) +
-				//			(bullet1.position.y - newposY) * (bullet1.position.y - newposY));
-
-				//		Distance2 = sqrtf((bullet2.position.x - player.position.x) * (bullet2.position.x - player.position.x) +
-				//			(bullet2.position.y - newposY) * (bullet2.position.y - newposY));
-
-				//		Distance3 = sqrtf((bullet3.position.x - player.position.x) * (bullet3.position.x - player.position.x) +
-				//			(bullet3.position.y - newposY) * (bullet3.position.y - newposY));
-				//	}
-				//}
 
 				newposY = (player.position.y - 480) * -1;//ここでplayerのY座標を決める
 				NewBossPosY = (boss.position.y - 415) * -1;//ここでplayerのY座標を決める
