@@ -134,6 +134,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	float Distance = 0.0f;//弾の当たり判定用の変数を用意
 
+	float PlayerDistance = 0.0f;
+
 	int BulletAttack = 1;
 	int playerHp = 5;
 
@@ -310,7 +312,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			for (int i = 0; i < Max; i++) {
 				if (bullet[i].isShot == true) {
 					Distance = sqrtf((bullet[i].position.x - player.position.x) * (bullet[i].position.x - player.position.x) +
-						             (bullet[i].position.y - newposY) * (bullet[i].position.y - newposY));
+						(bullet[i].position.y - newposY) * (bullet[i].position.y - newposY));
 
 					if (Distance <= player.radius + bullet[i].radius + player.radius + bullet[i].radius) {
 						bullet[i].isShot = false;
@@ -319,7 +321,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					}
 				}
 			}
-			
+
 			//ゲームオーバーに向かう処理
 			if (playerHp == 0) {
 				for (int i = 0; i < Max; i++) {
@@ -332,7 +334,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					bullet[i].isShot = false;
 
 					Scene = GAMEOVER;
-					
+
 				}
 			}
 
@@ -392,497 +394,494 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			break;
 
-			case BOSS:
+		case BOSS:
 
-				//===================================<プレイヤーのジャンプ処理>=================================
+			//===================================<プレイヤーのジャンプ処理>=================================
 
-			//二段ジャンプ
-				if (IsJump == 0 || IsJump == 1) {//ジャンプ０回と１回の時に
-					if (isjampTimer == 0) {//ジャンプラグ
-						if (keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {//ジャンプ押したら
-							Jampsystem = 1;//ジャンプ
-							player.velocity.y = 19.0;
-							IsJump += 1;
-							isjampTimer = 1;//ジャンプのラグ計算開始
-						}
+		//二段ジャンプ
+			if (IsJump == 0 || IsJump == 1) {//ジャンプ０回と１回の時に
+				if (isjampTimer == 0) {//ジャンプラグ
+					if (keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {//ジャンプ押したら
+						Jampsystem = 1;//ジャンプ
+						player.velocity.y = 19.0;
+						IsJump += 1;
+						isjampTimer = 1;//ジャンプのラグ計算開始
 					}
 				}
+			}
 
-				//ジャンプのラグ
-				if (isjampTimer == 1) {
-					jampTimer--;//25フレーム
-				}
+			//ジャンプのラグ
+			if (isjampTimer == 1) {
+				jampTimer--;//25フレーム
+			}
 
-				if (jampTimer == 0) {//ラグタイマーが終わったら
-					isjampTimer = 0;//ラグタイマー変数を0に戻す
-					jampTimer = 25;//ラグタイマーを25フレームに戻す
-				}
+			if (jampTimer == 0) {//ラグタイマーが終わったら
+				isjampTimer = 0;//ラグタイマー変数を0に戻す
+				jampTimer = 25;//ラグタイマーを25フレームに戻す
+			}
 
-				//2回目のジャンプ
-				if (IsJump == 2) {
-					if (isjampTimer == 0) {
-						if (keys[DIK_SPACE]) {//長押しでヒップドロップ
-							
-							player.position.y -= player.speed;
-							
-						}
+			//2回目のジャンプ
+			if (IsJump == 2) {
+				if (isjampTimer == 0) {
+					if (keys[DIK_SPACE]) {//長押しでヒップドロップ
+
+						player.position.y -= player.speed;
+
 					}
 				}
+			}
 
-				//ジャンプしたら
-				if (Jampsystem == 1) {//ジャンプの仕組み
-					player.velocity.y += player.acceleration.y;
-					player.position.y += player.velocity.y;
+			//ジャンプしたら
+			if (Jampsystem == 1) {//ジャンプの仕組み
+				player.velocity.y += player.acceleration.y;
+				player.position.y += player.velocity.y;
+			}
+
+			//謎---ジャンプして元の位置に戻すためのだった
+			if (player.position.y < player.scale) {
+				player.position.y = player.scale;
+				IsJump = 0;//元の位置に戻ったらジャンプ０
+			}
+
+			//==========================================<Bossの弾の更新処理 ここから>==========================================
+
+			if (timer > 0) {
+				timer--;//タイマーが０になるまでマイナスする
+			}
+
+			if (timer <= 0) {
+				if (randnum == 0) {
+					randnum = rand() % 4 + 1;//タイマーが０以下になった時にrandnumが０だったらrandnum1.2.3.4のどれかになる
 				}
+			}
 
-				//謎---ジャンプして元の位置に戻すためのだった
-				if (player.position.y < player.scale) {
-					player.position.y = player.scale;
-					IsJump = 0;//元の位置に戻ったらジャンプ０
-				}
 
-				//==========================================<Bossの弾の更新処理 ここから>==========================================
 
-				if (timer > 0) {
-					timer--;//タイマーが０になるまでマイナスする
-				}
+			//一個目のアクション
 
-				if (timer <= 0) {
-					if (randnum == 0) {
-						randnum = rand() % 4 + 1;//タイマーが０以下になった時にrandnumが０だったらrandnum1.2.3.4のどれかになる
+			if (randnum == 1) {//rand1が呼ばれたときにこの動作をする
+				BossAction1 = true;
+				if (BossAction1 == true) {//一つ目の
+					timer = 30;
+
+					if (IsBoss == true) {
+						BossShotCount1--;
+					}
+
+					if (BossShotCount1 == 0) {
+						IsBulletShot1 = true;
+						IsBulletShot2 = true;
+						IsBulletShot3 = true;
+						IsBulletShot4 = true;
+						IsBulletShot5 = true;
+						IsBulletShot6 = true;
+						IsBulletShot7 = true;
+						IsBulletShot8 = true;
+						bullet1.position.x = 1100;
+						bullet1.position.y = 0;
+
+						bullet2.position.x = 1100;
+						bullet2.position.y = 10;
+
+						bullet3.position.x = 1100;
+						bullet3.position.y = 50;
+
+						bullet4.position.x = 1100;
+						bullet4.position.y = 90;
+
+
+
+
+						bullet5.position.x = 1100;
+						bullet5.position.y = 360;
+
+						bullet6.position.x = 1100;
+						bullet6.position.y = 400;
+
+						bullet7.position.x = 1100;
+						bullet7.position.y = 440;
+
+						bullet8.position.x = 1100;
+						bullet8.position.y = 480;
+					}
+
+
+					if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 && IsBulletShot4 && IsBulletShot5 && IsBulletShot6 && IsBulletShot7 && IsBulletShot8 == true) {
+						bullet1.position.x -= bullet1.speed;
+						bullet2.position.x -= bullet2.speed;
+						bullet3.position.x -= bullet3.speed;
+						bullet4.position.x -= bullet4.speed;
+						bullet5.position.x -= bullet5.speed;
+						bullet6.position.x -= bullet6.speed;
+						bullet7.position.x -= bullet7.speed;
+						bullet8.position.x -= bullet8.speed;
+					}
+
+					if (bullet1.position.x && bullet2.position.x && bullet3.position.x && bullet4.position.x && bullet5.position.x && bullet6.position.x && bullet7.position.x && bullet8.position.x < 0) {
+						IsBulletShot1 = false;
+						IsBulletShot2 = false;
+						IsBulletShot3 = false;
+						IsBulletShot4 = false;
+						IsBulletShot5 = false;
+						IsBulletShot6 = false;
+						IsBulletShot7 = false;
+						IsBulletShot8 = false;
+
+						BossShotCount1 = 30;
+						BossAction1 = false;
+
+						bullet1.position.x = 1100;
+						bullet1.position.y = 0;
+
+						bullet2.position.x = 1100;
+						bullet2.position.y = 10;
+
+						bullet3.position.x = 1100;
+						bullet3.position.y = 50;
+
+						bullet4.position.x = 1100;
+						bullet4.position.y = 90;
+
+
+
+
+
+						bullet5.position.x = 1100;
+						bullet5.position.y = 360;
+
+						bullet6.position.x = 1100;
+						bullet6.position.y = 400;
+
+						bullet7.position.x = 1100;
+						bullet7.position.y = 440;
+
+						bullet8.position.x = 1100;
+						bullet8.position.y = 480;
+
+						randnum = 0;
 					}
 				}
+			}
+
+			//二個目のアクション
+
+			if (randnum == 2) {//rand2が呼ばれたときにこの動作をする
+				BossAction2 = true;
+				if (BossAction2 == true) {//二つ目の
+					timer = 30;
+
+					if (IsBoss == true) {
+						BossShotCount2--;
+					}
+
+					if (BossShotCount2 == 0) {
+						IsBulletShot1 = true;
+						IsBulletShot2 = true;
+						IsBulletShot3 = true;
+						IsBulletShot4 = true;
+						IsBulletShot5 = true;
+						IsBulletShot6 = true;
+						IsBulletShot7 = true;
+						IsBulletShot8 = true;
+
+						bullet1.position.x = 1100;
+						bullet1.position.y = 90;
+
+						bullet2.position.x = 1100;
+						bullet2.position.y = 100;
+
+						bullet3.position.x = 1100;
+						bullet3.position.y = 140;
+
+						bullet4.position.x = 1100;
+						bullet4.position.y = 180;
+
+						bullet5.position.x = 1100;
+						bullet5.position.y = 220;
+
+						bullet6.position.x = 1100;
+						bullet6.position.y = 260;
+
+						bullet7.position.x = 1100;
+						bullet7.position.y = 300;
+
+						bullet8.position.x = 1100;
+						bullet8.position.y = 340;
+
+					}
 
 
+					if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 && IsBulletShot4 && IsBulletShot5 && IsBulletShot6 && IsBulletShot7 && IsBulletShot8 == true) {
+						bullet1.position.x -= bullet1.speed;
+						bullet2.position.x -= bullet2.speed;
+						bullet3.position.x -= bullet3.speed;
+						bullet4.position.x -= bullet4.speed;
+						bullet5.position.x -= bullet5.speed;
+						bullet6.position.x -= bullet6.speed;
+						bullet7.position.x -= bullet7.speed;
+						bullet8.position.x -= bullet8.speed;
+					}
 
-				//一個目のアクション
+					if (bullet1.position.x && bullet2.position.x && bullet3.position.x && bullet4.position.x && bullet5.position.x && bullet6.position.x && bullet7.position.x && bullet8.position.x < 0) {
+						IsBulletShot1 = false;
+						IsBulletShot2 = false;
+						IsBulletShot3 = false;
+						IsBulletShot4 = false;
+						IsBulletShot5 = false;
+						IsBulletShot6 = false;
+						IsBulletShot7 = false;
+						IsBulletShot8 = false;
 
-				if (randnum == 1) {//rand1が呼ばれたときにこの動作をする
-					BossAction1 = true;
-					if (BossAction1 == true) {//一つ目の
-						timer = 30;
+						BossShotCount2 = 30;
+						BossAction2 = false;
 
-						if (IsBoss == true) {
-							BossShotCount1--;
-						}
+						bullet1.position.x = 1100;
+						bullet1.position.y = 90;
 
-						if (BossShotCount1 == 0) {
-							IsBulletShot1 = true;
-							IsBulletShot2 = true;
-							IsBulletShot3 = true;
-							IsBulletShot4 = true;
-							IsBulletShot5 = true;
-							IsBulletShot6 = true;
-							IsBulletShot7 = true;
-							IsBulletShot8 = true;
-							bullet1.position.x = 1100;
-							bullet1.position.y = 0;
+						bullet2.position.x = 1100;
+						bullet2.position.y = 100;
 
-							bullet2.position.x = 1100;
-							bullet2.position.y = 10;
+						bullet3.position.x = 1100;
+						bullet3.position.y = 140;
 
-							bullet3.position.x = 1100;
-							bullet3.position.y = 50;
+						bullet4.position.x = 1100;
+						bullet4.position.y = 180;
 
-							bullet4.position.x = 1100;
-							bullet4.position.y = 90;
+						bullet5.position.x = 1100;
+						bullet5.position.y = 220;
 
+						bullet6.position.x = 1100;
+						bullet6.position.y = 260;
 
+						bullet7.position.x = 1100;
+						bullet7.position.y = 300;
 
+						bullet8.position.x = 1100;
+						bullet8.position.y = 340;
 
-							bullet5.position.x = 1100;
-							bullet5.position.y = 360;
-
-							bullet6.position.x = 1100;
-							bullet6.position.y = 400;
-
-							bullet7.position.x = 1100;
-							bullet7.position.y = 440;
-
-							bullet8.position.x = 1100;
-							bullet8.position.y = 480;
-						}
-
-
-						if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 && IsBulletShot4 && IsBulletShot5 && IsBulletShot6 && IsBulletShot7 && IsBulletShot8 == true) {
-							bullet1.position.x -= bullet1.speed;
-							bullet2.position.x -= bullet2.speed;
-							bullet3.position.x -= bullet3.speed;
-							bullet4.position.x -= bullet4.speed;
-							bullet5.position.x -= bullet5.speed;
-							bullet6.position.x -= bullet6.speed;
-							bullet7.position.x -= bullet7.speed;
-							bullet8.position.x -= bullet8.speed;
-						}
-
-						if (bullet1.position.x && bullet2.position.x && bullet3.position.x && bullet4.position.x && bullet5.position.x && bullet6.position.x && bullet7.position.x && bullet8.position.x < 0) {
-							IsBulletShot1 = false;
-							IsBulletShot2 = false;
-							IsBulletShot3 = false;
-							IsBulletShot4 = false;
-							IsBulletShot5 = false;
-							IsBulletShot6 = false;
-							IsBulletShot7 = false;
-							IsBulletShot8 = false;
-
-							BossShotCount1 = 30;
-							BossAction1 = false;
-
-							bullet1.position.x = 1100;
-							bullet1.position.y = 0;
-
-							bullet2.position.x = 1100;
-							bullet2.position.y = 10;
-
-							bullet3.position.x = 1100;
-							bullet3.position.y = 50;
-
-							bullet4.position.x = 1100;
-							bullet4.position.y = 90;
-
-
-
-
-
-							bullet5.position.x = 1100;
-							bullet5.position.y = 360;
-
-							bullet6.position.x = 1100;
-							bullet6.position.y = 400;
-
-							bullet7.position.x = 1100;
-							bullet7.position.y = 440;
-
-							bullet8.position.x = 1100;
-							bullet8.position.y = 480;
-
-							randnum = 0;
-						}
+						randnum = 0;
 					}
 				}
+			}
 
-				//二個目のアクション
+			//三個目のアクション
 
-				if (randnum == 2) {//rand2が呼ばれたときにこの動作をする
-					BossAction2 = true;
-					if (BossAction2 == true) {//二つ目の
-						timer = 30;
+			if (randnum == 3) {//rand3が呼ばれたときにこの動作をする
+				BossAction3 = true;
+				if (BossAction3 == true) {//三つ目の
+					timer = 30;
 
-						if (IsBoss == true) {
-							BossShotCount2--;
-						}
+					if (IsBoss == true) {
+						BossShotCount3--;
+					}
 
-						if (BossShotCount2 == 0) {
-							IsBulletShot1 = true;
-							IsBulletShot2 = true;
-							IsBulletShot3 = true;
-							IsBulletShot4 = true;
-							IsBulletShot5 = true;
-							IsBulletShot6 = true;
-							IsBulletShot7 = true;
-							IsBulletShot8 = true;
+					if (BossShotCount3 == 0) {
+						IsBulletShot1 = true;
+						IsBulletShot2 = true;
+						IsBulletShot3 = true;
+						IsBulletShot4 = true;
+						IsBulletShot5 = true;
+						IsBulletShot6 = true;
+						IsBulletShot7 = true;
+						IsBulletShot8 = true;
 
-							bullet1.position.x = 1100;
-							bullet1.position.y = 90;
+						bullet1.position.x = 1100;
+						bullet1.position.y = 0;
 
-							bullet2.position.x = 1100;
-							bullet2.position.y = 100;
-
-							bullet3.position.x = 1100;
-							bullet3.position.y = 140;
-
-							bullet4.position.x = 1100;
-							bullet4.position.y = 180;
-
-							bullet5.position.x = 1100;
-							bullet5.position.y = 220;
-
-							bullet6.position.x = 1100;
-							bullet6.position.y = 260;
-
-							bullet7.position.x = 1100;
-							bullet7.position.y = 300;
-
-							bullet8.position.x = 1100;
-							bullet8.position.y = 340;
-
-						}
+						bullet2.position.x = 1100;
+						bullet2.position.y = 10;
 
 
-						if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 && IsBulletShot4 && IsBulletShot5 && IsBulletShot6 && IsBulletShot7 && IsBulletShot8 == true) {
-							bullet1.position.x -= bullet1.speed;
-							bullet2.position.x -= bullet2.speed;
-							bullet3.position.x -= bullet3.speed;
-							bullet4.position.x -= bullet4.speed;
-							bullet5.position.x -= bullet5.speed;
-							bullet6.position.x -= bullet6.speed;
-							bullet7.position.x -= bullet7.speed;
-							bullet8.position.x -= bullet8.speed;
-						}
 
-						if (bullet1.position.x && bullet2.position.x && bullet3.position.x && bullet4.position.x && bullet5.position.x && bullet6.position.x && bullet7.position.x && bullet8.position.x < 0) {
-							IsBulletShot1 = false;
-							IsBulletShot2 = false;
-							IsBulletShot3 = false;
-							IsBulletShot4 = false;
-							IsBulletShot5 = false;
-							IsBulletShot6 = false;
-							IsBulletShot7 = false;
-							IsBulletShot8 = false;
 
-							BossShotCount2 = 30;
-							BossAction2 = false;
 
-							bullet1.position.x = 1100;
-							bullet1.position.y = 90;
+						bullet3.position.x = 1100;
+						bullet3.position.y = 280;
 
-							bullet2.position.x = 1100;
-							bullet2.position.y = 100;
+						bullet4.position.x = 1100;
+						bullet4.position.y = 320;
 
-							bullet3.position.x = 1100;
-							bullet3.position.y = 140;
+						bullet5.position.x = 1100;
+						bullet5.position.y = 360;
 
-							bullet4.position.x = 1100;
-							bullet4.position.y = 180;
+						bullet6.position.x = 1100;
+						bullet6.position.y = 400;
 
-							bullet5.position.x = 1100;
-							bullet5.position.y = 220;
+						bullet7.position.x = 1100;
+						bullet7.position.y = 440;
 
-							bullet6.position.x = 1100;
-							bullet6.position.y = 260;
+						bullet8.position.x = 1100;
+						bullet8.position.y = 480;
+					}
 
-							bullet7.position.x = 1100;
-							bullet7.position.y = 300;
 
-							bullet8.position.x = 1100;
-							bullet8.position.y = 340;
+					if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 && IsBulletShot4 && IsBulletShot5 && IsBulletShot6 && IsBulletShot7 && IsBulletShot8 == true) {
+						bullet1.position.x -= bullet1.speed;
+						bullet2.position.x -= bullet2.speed;
+						bullet3.position.x -= bullet3.speed;
+						bullet4.position.x -= bullet4.speed;
+						bullet5.position.x -= bullet5.speed;
+						bullet6.position.x -= bullet6.speed;
+						bullet7.position.x -= bullet7.speed;
+						bullet8.position.x -= bullet8.speed;
+					}
 
-							randnum = 0;
-						}
+					if (bullet1.position.x && bullet2.position.x && bullet3.position.x && bullet4.position.x && bullet5.position.x && bullet6.position.x && bullet7.position.x && bullet8.position.x < 0) {
+						IsBulletShot1 = false;
+						IsBulletShot2 = false;
+						IsBulletShot3 = false;
+						IsBulletShot4 = false;
+						IsBulletShot5 = false;
+						IsBulletShot6 = false;
+						IsBulletShot7 = false;
+						IsBulletShot8 = false;
+
+						BossShotCount3 = 30;
+						BossAction3 = false;
+
+						bullet1.position.x = 1100;
+						bullet1.position.y = 0;
+
+						bullet2.position.x = 1100;
+						bullet2.position.y = 10;
+
+
+
+
+
+						bullet3.position.x = 1100;
+						bullet3.position.y = 280;
+
+						bullet4.position.x = 1100;
+						bullet4.position.y = 320;
+
+						bullet5.position.x = 1100;
+						bullet5.position.y = 360;
+
+						bullet6.position.x = 1100;
+						bullet6.position.y = 400;
+
+						bullet7.position.x = 1100;
+						bullet7.position.y = 440;
+
+						bullet8.position.x = 1100;
+						bullet8.position.y = 480;
+
+						randnum = 0;
 					}
 				}
+			}
 
-				//三個目のアクション
+			//四個目のアクション
 
-				if (randnum == 3) {//rand3が呼ばれたときにこの動作をする
-					BossAction3 = true;
-					if (BossAction3 == true) {//三つ目の
-						timer = 30;
+			if (randnum == 4) {//rand4が呼ばれたときにこの動作をする
+				BossAction4 = true;
+				if (BossAction4 == true) {//四つ目の
+					timer = 30;
 
-						if (IsBoss == true) {
-							BossShotCount3--;
-						}
+					if (IsBoss == true) {
+						BossShotCount4--;
+					}
 
-						if (BossShotCount3 == 0) {
-							IsBulletShot1 = true;
-							IsBulletShot2 = true;
-							IsBulletShot3 = true;
-							IsBulletShot4 = true;
-							IsBulletShot5 = true;
-							IsBulletShot6 = true;
-							IsBulletShot7 = true;
-							IsBulletShot8 = true;
+					if (BossShotCount4 == 0) {
+						IsBulletShot1 = true;
+						IsBulletShot2 = true;
+						IsBulletShot3 = true;
+						IsBulletShot4 = true;
+						IsBulletShot5 = true;
+						IsBulletShot6 = true;
+						IsBulletShot7 = true;
+						IsBulletShot8 = true;
 
-							bullet1.position.x = 1100;
-							bullet1.position.y = 0;
+						bullet1.position.x = 1100;
+						bullet1.position.y = 0;
 
-							bullet2.position.x = 1100;
-							bullet2.position.y = 10;
+						bullet2.position.x = 1100;
+						bullet2.position.y = 10;
 
+						bullet3.position.x = 1100;
+						bullet3.position.y = 50;
 
+						bullet4.position.x = 1100;
+						bullet4.position.y = 90;
 
+						bullet5.position.x = 1100;
+						bullet5.position.y = 130;
 
-
-							bullet3.position.x = 1100;
-							bullet3.position.y = 280;
-
-							bullet4.position.x = 1100;
-							bullet4.position.y = 320;
-
-							bullet5.position.x = 1100;
-							bullet5.position.y = 360;
-
-							bullet6.position.x = 1100;
-							bullet6.position.y = 400;
-
-							bullet7.position.x = 1100;
-							bullet7.position.y = 440;
-
-							bullet8.position.x = 1100;
-							bullet8.position.y = 480;
-						}
-
-
-						if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 && IsBulletShot4 && IsBulletShot5 && IsBulletShot6 && IsBulletShot7 && IsBulletShot8 == true) {
-							bullet1.position.x -= bullet1.speed;
-							bullet2.position.x -= bullet2.speed;
-							bullet3.position.x -= bullet3.speed;
-							bullet4.position.x -= bullet4.speed;
-							bullet5.position.x -= bullet5.speed;
-							bullet6.position.x -= bullet6.speed;
-							bullet7.position.x -= bullet7.speed;
-							bullet8.position.x -= bullet8.speed;
-						}
-
-						if (bullet1.position.x && bullet2.position.x && bullet3.position.x && bullet4.position.x && bullet5.position.x && bullet6.position.x && bullet7.position.x && bullet8.position.x < 0) {
-							IsBulletShot1 = false;
-							IsBulletShot2 = false;
-							IsBulletShot3 = false;
-							IsBulletShot4 = false;
-							IsBulletShot5 = false;
-							IsBulletShot6 = false;
-							IsBulletShot7 = false;
-							IsBulletShot8 = false;
-
-							BossShotCount3 = 30;
-							BossAction3 = false;
-
-							bullet1.position.x = 1100;
-							bullet1.position.y = 0;
-
-							bullet2.position.x = 1100;
-							bullet2.position.y = 10;
+						bullet6.position.x = 1100;
+						bullet6.position.y = 170;
 
 
 
 
 
-							bullet3.position.x = 1100;
-							bullet3.position.y = 280;
+						bullet7.position.x = 1100;
+						bullet7.position.y = 440;
 
-							bullet4.position.x = 1100;
-							bullet4.position.y = 320;
+						bullet8.position.x = 1100;
+						bullet8.position.y = 480;
+					}
 
-							bullet5.position.x = 1100;
-							bullet5.position.y = 360;
 
-							bullet6.position.x = 1100;
-							bullet6.position.y = 400;
+					if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 && IsBulletShot4 && IsBulletShot5 && IsBulletShot6 && IsBulletShot7 && IsBulletShot8 == true) {
+						bullet1.position.x -= bullet1.speed;
+						bullet2.position.x -= bullet2.speed;
+						bullet3.position.x -= bullet3.speed;
+						bullet4.position.x -= bullet4.speed;
+						bullet5.position.x -= bullet5.speed;
+						bullet6.position.x -= bullet6.speed;
+						bullet7.position.x -= bullet7.speed;
+						bullet8.position.x -= bullet8.speed;
+					}
 
-							bullet7.position.x = 1100;
-							bullet7.position.y = 440;
+					if (bullet1.position.x && bullet2.position.x && bullet3.position.x && bullet4.position.x && bullet5.position.x && bullet6.position.x && bullet7.position.x && bullet8.position.x < 0) {
+						IsBulletShot1 = false;
+						IsBulletShot2 = false;
+						IsBulletShot3 = false;
+						IsBulletShot4 = false;
+						IsBulletShot5 = false;
+						IsBulletShot6 = false;
+						IsBulletShot7 = false;
+						IsBulletShot8 = false;
 
-							bullet8.position.x = 1100;
-							bullet8.position.y = 480;
+						BossShotCount4 = 30;
+						BossAction4 = false;
 
-							randnum = 0;
-						}
+						bullet1.position.x = 1100;
+						bullet1.position.y = 0;
+
+						bullet2.position.x = 1100;
+						bullet2.position.y = 10;
+
+						bullet3.position.x = 1100;
+						bullet3.position.y = 50;
+
+						bullet4.position.x = 1100;
+						bullet4.position.y = 90;
+
+						bullet5.position.x = 1100;
+						bullet5.position.y = 130;
+
+						bullet6.position.x = 1100;
+						bullet6.position.y = 170;
+
+
+
+
+
+						bullet7.position.x = 1100;
+						bullet7.position.y = 440;
+
+						bullet8.position.x = 1100;
+						bullet8.position.y = 480;
+
+						randnum = 0;
 					}
 				}
-
-				//四個目のアクション
-
-				if (randnum == 4) {//ran41が呼ばれたときにこの動作をする
-					BossAction4 = true;
-					if (BossAction4 == true) {//四つ目の
-						timer = 30;
-
-						if (IsBoss == true) {
-							BossShotCount4--;
-						}
-
-						if (BossShotCount4 == 0) {
-							IsBulletShot1 = true;
-							IsBulletShot2 = true;
-							IsBulletShot3 = true;
-							IsBulletShot4 = true;
-							IsBulletShot5 = true;
-							IsBulletShot6 = true;
-							IsBulletShot7 = true;
-							IsBulletShot8 = true;
-
-							bullet1.position.x = 1100;
-							bullet1.position.y = 0;
-
-							bullet2.position.x = 1100;
-							bullet2.position.y = 10;
-
-							bullet3.position.x = 1100;
-							bullet3.position.y = 50;
-
-							bullet4.position.x = 1100;
-							bullet4.position.y = 90;
-
-							bullet5.position.x = 1100;
-							bullet5.position.y = 130;
-
-							bullet6.position.x = 1100;
-							bullet6.position.y = 170;
-
-
-
-
-
-							bullet7.position.x = 1100;
-							bullet7.position.y = 440;
-
-							bullet8.position.x = 1100;
-							bullet8.position.y = 480;
-						}
-
-
-						if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 && IsBulletShot4 && IsBulletShot5 && IsBulletShot6 && IsBulletShot7 && IsBulletShot8 == true) {
-							bullet1.position.x -= bullet1.speed;
-							bullet2.position.x -= bullet2.speed;
-							bullet3.position.x -= bullet3.speed;
-							bullet4.position.x -= bullet4.speed;
-							bullet5.position.x -= bullet5.speed;
-							bullet6.position.x -= bullet6.speed;
-							bullet7.position.x -= bullet7.speed;
-							bullet8.position.x -= bullet8.speed;
-						}
-
-						if (bullet1.position.x && bullet2.position.x && bullet3.position.x && bullet4.position.x && bullet5.position.x && bullet6.position.x && bullet7.position.x && bullet8.position.x < 0) {
-							IsBulletShot1 = false;
-							IsBulletShot2 = false;
-							IsBulletShot3 = false;
-							IsBulletShot4 = false;
-							IsBulletShot5 = false;
-							IsBulletShot6 = false;
-							IsBulletShot7 = false;
-							IsBulletShot8 = false;
-
-							BossShotCount4 = 30;
-							BossAction4 = false;
-
-							bullet1.position.x = 1100;
-							bullet1.position.y = 0;
-
-							bullet2.position.x = 1100;
-							bullet2.position.y = 10;
-
-							bullet3.position.x = 1100;
-							bullet3.position.y = 50;
-
-							bullet4.position.x = 1100;
-							bullet4.position.y = 90;
-
-							bullet5.position.x = 1100;
-							bullet5.position.y = 130;
-
-							bullet6.position.x = 1100;
-							bullet6.position.y = 170;
-
-
-
-
-
-							bullet7.position.x = 1100;
-							bullet7.position.y = 440;
-
-							bullet8.position.x = 1100;
-							bullet8.position.y = 480;
-
-							randnum = 0;
-						}
-					}
-				}
+			}
 
 				newposY = (player.position.y - 480) * -1;//ここでplayerのY座標を決める
 				NewBossPosY = (boss.position.y - 415) * -1;//ここでplayerのY座標を決める
-
-				Novice::ScreenPrintf(0, 0, "%f", boss.position.x);
-				Novice::ScreenPrintf(0, 20, "%f", boss.position.y);
 
 				Novice::ScreenPrintf(0, 400, "timer = %d", timer);
 				Novice::ScreenPrintf(0, 420, "randnum = %d", randnum);
