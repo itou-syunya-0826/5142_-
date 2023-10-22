@@ -36,7 +36,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		float radius;
 		float scale;//1
 		float speed;//20
-		
 	}Player;
 
 	//Player構造体の初期化
@@ -62,9 +61,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Vector2 position;
 		float radius;
 		float speed;
+		float Attack;
 		unsigned int color;
 		bool isShot;
-		bool isHit;
 
 	}Bullet;
 
@@ -79,7 +78,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		bullet[i].speed = 7.0f;
 		bullet[i].color = WHITE;
 		bullet[i].isShot = false;
-		bullet[i].isHit = false;
 	}
 
 	//Boss構造体の宣言==================================================================================
@@ -134,10 +132,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int BossBulletHandle = Novice::LoadTexture("./tama.png");
 	//int型変数BossBulletHandleを宣言し、LoadTextureでBOSSの弾を読み込む
 
-	//int BulletHandle = Novice::LoadTexture("./scrollBullet.png");
-	int BulletHandle[2];
-	BulletHandle[0] = Novice::LoadTexture("./tama_sample_green.png");
-	BulletHandle[1] = Novice::LoadTexture("./tama_sample_pink.png");
+	int BulletHandle = Novice::LoadTexture("./tama_sample_green.png");
 
 	int worldPosX = 640;//ワールドから見た自機のX座標を640で初期化する
 
@@ -155,6 +150,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//シーン切り替え用の変数Sceneを宣言し,0で初期化する
 
 	float Distance = 0.0f;
+
+	int BulletAttack = 1;
+	int playerHp = 5;
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -250,11 +248,26 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						             (bullet[i].position.y - newposY) * (bullet[i].position.y - newposY));
 
 					if (Distance <= player.radius + bullet[i].radius + player.radius + bullet[i].radius) {
-						bullet[i].isHit = true;
+						bullet[i].isShot = false;
+						playerHp = playerHp - BulletAttack;
+
 					}
-					else {
-						bullet[i].isHit = false;
-					}
+				}
+			}
+			
+			//ゲームオーバーに向かう処理
+			if (playerHp == 0) {
+				for (int i = 0; i < Max; i++) {
+					//int型変数の初期化
+					playerHp = 5;
+					scrollX = 0;
+					worldPosX = 640;
+
+					//配列型変数の初期化
+					bullet[i].isShot = false;
+
+					Scene = GAMEOVER;
+					
 				}
 			}
 
@@ -306,13 +319,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			newposY = (player.position.y - 480) * -1;//ここでplayerのY座標を決める
 
 			//値確認
-			Novice::ScreenPrintf(100, 100, "isJump=%d", IsJump);
-			Novice::ScreenPrintf(100, 130, "isjampTimer=%d", isjampTimer);
-			Novice::ScreenPrintf(100, 160, "jampTimer=%d", jampTimer);
+			//Novice::ScreenPrintf(100, 100, "isJump=%d", IsJump);
+			//Novice::ScreenPrintf(100, 130, "isjampTimer=%d", isjampTimer);
+			//Novice::ScreenPrintf(100, 160, "jampTimer=%d", jampTimer);
 
-
-			Novice::ScreenPrintf(100, 190, "worldPosX = %d", worldPosX);
-			Novice::ScreenPrintf(100, 220, "scrollX = %d", scrollX);
+			Novice::ScreenPrintf(100, 190, "playerHp = %d", playerHp);
 
 			break;
 
@@ -443,15 +454,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, sample, player.scale, player.scale, 0.0f, WHITE);
 
 			for (int i = 0; i < Max; i++) {
-				if (bullet[i].isShot == true && bullet[i].isHit == false) {
-					Novice::DrawSprite(int(bullet[i].position.x), int(bullet[i].position.y), BulletHandle[0], 1, 1, 0.0f, bullet[i].color);
-					//for文を使用し、bullet[i].isShotがTrueだった場合、DrawSpriteで画像を描画する
-				}
-			}
-
-			for (int i = 0; i < Max; i++) {
-				if (bullet[i].isShot == true && bullet[i].isHit == true) {
-					Novice::DrawSprite(int(bullet[i].position.x), int(bullet[i].position.y), BulletHandle[1], 1, 1, 0.0f, bullet[i].color);
+				if (bullet[i].isShot == true) {
+					Novice::DrawSprite(int(bullet[i].position.x), int(bullet[i].position.y), BulletHandle, 1, 1, 0.0f, bullet[i].color);
 					//for文を使用し、bullet[i].isShotがTrueだった場合、DrawSpriteで画像を描画する
 				}
 			}
