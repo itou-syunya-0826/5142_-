@@ -23,7 +23,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		GAMEOVER,
 	};
 
-	OneButton Scene = TITLE;
+	OneButton Scene = BOSS;
 
 	//Vector2構造体の宣言
 	typedef struct Vector2 {
@@ -39,7 +39,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		float radius;
 		float scale;//1
 		float speed;//20
-		bool isReject1;//跳ね返すフラグ
 	}Player;
 
 	//Player構造体の初期化
@@ -50,7 +49,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		14.0f,
 		1.0f,
 		20.0f,
-		false
 	};
 	int sample = Novice::LoadTexture("./sample.png");//プレイヤーの描画
 
@@ -66,7 +64,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Vector2 position;
 		float radius;
 		float speed;
-		float Attack;
 		unsigned int color;
 		bool isShot;
 
@@ -93,8 +90,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//Boss構造体の初期化================================================================================
 	Boss boss{
-		{0.0f,0.0f},
-		WHITE
+		{1200,220},
+		10
 	};
 
 	typedef struct BossBullet {
@@ -135,12 +132,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int BulletCoolTimer = 10;
 	//スクロール時の弾のクールタイムを15に設定する
 
-	float Distance = 0.0f;//スクロール時の弾の当たり判定用の変数を用意
+	float Distance = 0.0f;//弾の当たり判定用の変数を用意
 
 	int BulletAttack = 1;
 	int playerHp = 5;
-
-
 
 	//==================================================<Bossの弾の宣言と初期化>===================================================
 
@@ -153,10 +148,40 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	BossBullet bullet2{
 		{0,0},
 		1.0f,
-		10.0f
+		10.0f,
 	};
 
 	BossBullet bullet3{
+		{0,0},
+		1.0f,
+		10.0f,
+	};
+
+	BossBullet bullet4{
+		{0,0},
+		1.0f,
+		10.0f
+	};
+
+	BossBullet bullet5{
+		{0,0},
+		1.0f,
+		10.0f
+	};
+
+	BossBullet bullet6{
+		{0,0},
+		1.0f,
+		10.0f
+	};
+
+	BossBullet bullet7{
+		{0,0},
+		1.0f,
+		10.0f
+	};
+
+	BossBullet bullet8{
 		{0,0},
 		1.0f,
 		10.0f
@@ -165,22 +190,24 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	bool IsBulletShot1 = false;
 	bool IsBulletShot2 = false;
 	bool IsBulletShot3 = false;
+	bool IsBulletShot4 = false;
+	bool IsBulletShot5 = false;
+	bool IsBulletShot6 = false;
+	bool IsBulletShot7 = false;
+	bool IsBulletShot8 = false;
 
-	bool IsBoss1 = false;
-	bool IsBoss2 = false;
-	bool IsBoss3 = false;
-
-	int EnemyCount1 = 60;
-	int EnemyCount2 = 60;
-	int EnemyCount3 = 60;
+	bool IsBoss = true;
 
 	int BossShotCount1 = 30;
 	int BossShotCount2 = 30;
 	int BossShotCount3 = 30;
+	int BossShotCount4 = 30;
 
 	bool BossAction1 = true;
 	bool BossAction2 = true;
 	bool BossAction3 = true;
+	bool BossAction4 = true;
+
 
 	//ためし
 	time_t Time = time(nullptr);
@@ -395,10 +422,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (IsJump == 2) {
 					if (isjampTimer == 0) {
 						if (keys[DIK_SPACE]) {//長押しでヒップドロップ
+							
 							player.position.y -= player.speed;
+							
 						}
 					}
-
 				}
 
 				//ジャンプしたら
@@ -416,71 +444,118 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				//==========================================<Bossの弾の更新処理 ここから>==========================================
 
 				if (timer > 0) {
-					timer--;
+					timer--;//タイマーが０になるまでマイナスする
 				}
 
 				if (timer <= 0) {
 					if (randnum == 0) {
-						randnum = rand() % 3 + 1;
+						randnum = rand() % 4 + 1;//タイマーが０以下になった時にrandnumが０だったらrandnum1.2.3.4のどれかになる
 					}
 				}
 
+
+
 				//一個目のアクション
 
-				if (randnum == 1) {
+				if (randnum == 1) {//rand1が呼ばれたときにこの動作をする
 					BossAction1 = true;
-					if (BossAction1 == true) {
-						EnemyCount1--;
+					if (BossAction1 == true) {//一つ目の
 						timer = 30;
 
-						if (EnemyCount1 == 0) {
-							IsBoss1 = true;
-							boss.position.x = 1100;
-							boss.position.y = 10;
-						}
-
-						if (IsBoss1 == true) {
+						if (IsBoss == true) {
 							BossShotCount1--;
 						}
-
 
 						if (BossShotCount1 == 0) {
 							IsBulletShot1 = true;
 							IsBulletShot2 = true;
 							IsBulletShot3 = true;
-							bullet1.position.x = boss.position.x;
-							bullet1.position.y = boss.position.y + 0;
+							IsBulletShot4 = true;
+							IsBulletShot5 = true;
+							IsBulletShot6 = true;
+							IsBulletShot7 = true;
+							IsBulletShot8 = true;
+							bullet1.position.x = 1100;
+							bullet1.position.y = 0;
 
-							bullet2.position.x = boss.position.x;
-							bullet2.position.y = boss.position.y + 16;
+							bullet2.position.x = 1100;
+							bullet2.position.y = 10;
 
-							bullet3.position.x = boss.position.x;
-							bullet3.position.y = boss.position.y + 64;
+							bullet3.position.x = 1100;
+							bullet3.position.y = 50;
+
+							bullet4.position.x = 1100;
+							bullet4.position.y = 90;
+
+
+
+
+							bullet5.position.x = 1100;
+							bullet5.position.y = 360;
+
+							bullet6.position.x = 1100;
+							bullet6.position.y = 400;
+
+							bullet7.position.x = 1100;
+							bullet7.position.y = 440;
+
+							bullet8.position.x = 1100;
+							bullet8.position.y = 480;
 						}
 
 
-						if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 == true) {
+						if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 && IsBulletShot4 && IsBulletShot5 && IsBulletShot6 && IsBulletShot7 && IsBulletShot8 == true) {
 							bullet1.position.x -= bullet1.speed;
 							bullet2.position.x -= bullet2.speed;
 							bullet3.position.x -= bullet3.speed;
+							bullet4.position.x -= bullet4.speed;
+							bullet5.position.x -= bullet5.speed;
+							bullet6.position.x -= bullet6.speed;
+							bullet7.position.x -= bullet7.speed;
+							bullet8.position.x -= bullet8.speed;
 						}
 
-						if (bullet1.position.x && bullet2.position.x && bullet3.position.x < 0) {
+						if (bullet1.position.x && bullet2.position.x && bullet3.position.x && bullet4.position.x && bullet5.position.x && bullet6.position.x && bullet7.position.x && bullet8.position.x < 0) {
 							IsBulletShot1 = false;
 							IsBulletShot2 = false;
 							IsBulletShot3 = false;
-							IsBoss1 = false;
-							EnemyCount1 = 60;
+							IsBulletShot4 = false;
+							IsBulletShot5 = false;
+							IsBulletShot6 = false;
+							IsBulletShot7 = false;
+							IsBulletShot8 = false;
+
 							BossShotCount1 = 30;
 							BossAction1 = false;
-							bullet1.position.x = boss.position.x;
-							bullet1.position.y = boss.position.y + 0;
 
-							bullet2.position.x = boss.position.x;
-							bullet2.position.y = boss.position.y + 16;
+							bullet1.position.x = 1100;
+							bullet1.position.y = 0;
 
-							bullet3.position.x = boss.position.x;
-							bullet3.position.y = boss.position.y + 64;
+							bullet2.position.x = 1100;
+							bullet2.position.y = 10;
+
+							bullet3.position.x = 1100;
+							bullet3.position.y = 50;
+
+							bullet4.position.x = 1100;
+							bullet4.position.y = 90;
+
+
+
+
+
+							bullet5.position.x = 1100;
+							bullet5.position.y = 360;
+
+							bullet6.position.x = 1100;
+							bullet6.position.y = 400;
+
+							bullet7.position.x = 1100;
+							bullet7.position.y = 440;
+
+							bullet8.position.x = 1100;
+							bullet8.position.y = 480;
+
 							randnum = 0;
 						}
 					}
@@ -488,19 +563,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 				//二個目のアクション
 
-				if (randnum == 2) {
+				if (randnum == 2) {//rand2が呼ばれたときにこの動作をする
 					BossAction2 = true;
-					if (BossAction2 == true) {
-						EnemyCount2--;
+					if (BossAction2 == true) {//二つ目の
 						timer = 30;
 
-						if (EnemyCount2 == 0) {
-							IsBoss2 = true;
-							boss.position.x = 1100;
-							boss.position.y = 200;
-						}
-
-						if (IsBoss2 == true) {
+						if (IsBoss == true) {
 							BossShotCount2--;
 						}
 
@@ -508,38 +576,87 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 							IsBulletShot1 = true;
 							IsBulletShot2 = true;
 							IsBulletShot3 = true;
-							bullet1.position.x = boss.position.x;
-							bullet1.position.y = boss.position.y + 0;
+							IsBulletShot4 = true;
+							IsBulletShot5 = true;
+							IsBulletShot6 = true;
+							IsBulletShot7 = true;
+							IsBulletShot8 = true;
 
-							bullet2.position.x = boss.position.x;
-							bullet2.position.y = boss.position.y + 16;
+							bullet1.position.x = 1100;
+							bullet1.position.y = 90;
 
-							bullet3.position.x = boss.position.x;
-							bullet3.position.y = boss.position.y + 64;
+							bullet2.position.x = 1100;
+							bullet2.position.y = 100;
+
+							bullet3.position.x = 1100;
+							bullet3.position.y = 140;
+
+							bullet4.position.x = 1100;
+							bullet4.position.y = 180;
+
+							bullet5.position.x = 1100;
+							bullet5.position.y = 220;
+
+							bullet6.position.x = 1100;
+							bullet6.position.y = 260;
+
+							bullet7.position.x = 1100;
+							bullet7.position.y = 300;
+
+							bullet8.position.x = 1100;
+							bullet8.position.y = 340;
+
 						}
 
-						if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 == true) {
+
+						if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 && IsBulletShot4 && IsBulletShot5 && IsBulletShot6 && IsBulletShot7 && IsBulletShot8 == true) {
 							bullet1.position.x -= bullet1.speed;
 							bullet2.position.x -= bullet2.speed;
 							bullet3.position.x -= bullet3.speed;
+							bullet4.position.x -= bullet4.speed;
+							bullet5.position.x -= bullet5.speed;
+							bullet6.position.x -= bullet6.speed;
+							bullet7.position.x -= bullet7.speed;
+							bullet8.position.x -= bullet8.speed;
 						}
 
-						if (bullet1.position.x && bullet2.position.x && bullet3.position.x < 0) {
+						if (bullet1.position.x && bullet2.position.x && bullet3.position.x && bullet4.position.x && bullet5.position.x && bullet6.position.x && bullet7.position.x && bullet8.position.x < 0) {
 							IsBulletShot1 = false;
 							IsBulletShot2 = false;
 							IsBulletShot3 = false;
-							IsBoss2 = false;
-							EnemyCount2 = 60;
+							IsBulletShot4 = false;
+							IsBulletShot5 = false;
+							IsBulletShot6 = false;
+							IsBulletShot7 = false;
+							IsBulletShot8 = false;
+
 							BossShotCount2 = 30;
 							BossAction2 = false;
-							bullet1.position.x = boss.position.x;
-							bullet1.position.y = boss.position.y + 0;
 
-							bullet2.position.x = boss.position.x;
-							bullet2.position.y = boss.position.y + 16;
+							bullet1.position.x = 1100;
+							bullet1.position.y = 90;
 
-							bullet3.position.x = boss.position.x;
-							bullet3.position.y = boss.position.y + 64;
+							bullet2.position.x = 1100;
+							bullet2.position.y = 100;
+
+							bullet3.position.x = 1100;
+							bullet3.position.y = 140;
+
+							bullet4.position.x = 1100;
+							bullet4.position.y = 180;
+
+							bullet5.position.x = 1100;
+							bullet5.position.y = 220;
+
+							bullet6.position.x = 1100;
+							bullet6.position.y = 260;
+
+							bullet7.position.x = 1100;
+							bullet7.position.y = 300;
+
+							bullet8.position.x = 1100;
+							bullet8.position.y = 340;
+
 							randnum = 0;
 						}
 					}
@@ -547,19 +664,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 				//三個目のアクション
 
-				if (randnum == 3) {
+				if (randnum == 3) {//rand3が呼ばれたときにこの動作をする
 					BossAction3 = true;
-					if (BossAction3 == true) {
-						EnemyCount3--;
+					if (BossAction3 == true) {//三つ目の
 						timer = 30;
 
-						if (EnemyCount3 == 0) {
-							IsBoss3 = true;
-							boss.position.x = 1100;
-							boss.position.y = 400;
-						}
-
-						if (IsBoss3 == true) {
+						if (IsBoss == true) {
 							BossShotCount3--;
 						}
 
@@ -567,48 +677,216 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 							IsBulletShot1 = true;
 							IsBulletShot2 = true;
 							IsBulletShot3 = true;
-							bullet1.position.x = boss.position.x;
-							bullet1.position.y = boss.position.y + 0;
+							IsBulletShot4 = true;
+							IsBulletShot5 = true;
+							IsBulletShot6 = true;
+							IsBulletShot7 = true;
+							IsBulletShot8 = true;
 
-							bullet2.position.x = boss.position.x;
-							bullet2.position.y = boss.position.y + 16;
+							bullet1.position.x = 1100;
+							bullet1.position.y = 0;
 
-							bullet3.position.x = boss.position.x;
-							bullet3.position.y = boss.position.y + 64;
+							bullet2.position.x = 1100;
+							bullet2.position.y = 10;
+
+
+
+
+
+							bullet3.position.x = 1100;
+							bullet3.position.y = 280;
+
+							bullet4.position.x = 1100;
+							bullet4.position.y = 320;
+
+							bullet5.position.x = 1100;
+							bullet5.position.y = 360;
+
+							bullet6.position.x = 1100;
+							bullet6.position.y = 400;
+
+							bullet7.position.x = 1100;
+							bullet7.position.y = 440;
+
+							bullet8.position.x = 1100;
+							bullet8.position.y = 480;
 						}
 
-						if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 == true) {
+
+						if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 && IsBulletShot4 && IsBulletShot5 && IsBulletShot6 && IsBulletShot7 && IsBulletShot8 == true) {
 							bullet1.position.x -= bullet1.speed;
 							bullet2.position.x -= bullet2.speed;
 							bullet3.position.x -= bullet3.speed;
+							bullet4.position.x -= bullet4.speed;
+							bullet5.position.x -= bullet5.speed;
+							bullet6.position.x -= bullet6.speed;
+							bullet7.position.x -= bullet7.speed;
+							bullet8.position.x -= bullet8.speed;
 						}
 
-						if (bullet1.position.x && bullet2.position.x && bullet3.position.x < 0) {
+						if (bullet1.position.x && bullet2.position.x && bullet3.position.x && bullet4.position.x && bullet5.position.x && bullet6.position.x && bullet7.position.x && bullet8.position.x < 0) {
 							IsBulletShot1 = false;
 							IsBulletShot2 = false;
 							IsBulletShot3 = false;
-							IsBoss3 = false;
-							EnemyCount3 = 60;
+							IsBulletShot4 = false;
+							IsBulletShot5 = false;
+							IsBulletShot6 = false;
+							IsBulletShot7 = false;
+							IsBulletShot8 = false;
+
 							BossShotCount3 = 30;
 							BossAction3 = false;
-							bullet1.position.x = boss.position.x;
-							bullet1.position.y = boss.position.y + 0;
 
-							bullet2.position.x = boss.position.x;
-							bullet2.position.y = boss.position.y + 16;
+							bullet1.position.x = 1100;
+							bullet1.position.y = 0;
 
-							bullet3.position.x = boss.position.x;
-							bullet3.position.y = boss.position.y + 64;
+							bullet2.position.x = 1100;
+							bullet2.position.y = 10;
+
+
+
+
+
+							bullet3.position.x = 1100;
+							bullet3.position.y = 280;
+
+							bullet4.position.x = 1100;
+							bullet4.position.y = 320;
+
+							bullet5.position.x = 1100;
+							bullet5.position.y = 360;
+
+							bullet6.position.x = 1100;
+							bullet6.position.y = 400;
+
+							bullet7.position.x = 1100;
+							bullet7.position.y = 440;
+
+							bullet8.position.x = 1100;
+							bullet8.position.y = 480;
+
 							randnum = 0;
 						}
 					}
 				}
 
-				//==========================================<Bossの弾の更新処理 ここまで>==========================================
+				//四個目のアクション
 
+				if (randnum == 4) {//ran41が呼ばれたときにこの動作をする
+					BossAction4 = true;
+					if (BossAction4 == true) {//四つ目の
+						timer = 30;
+
+						if (IsBoss == true) {
+							BossShotCount4--;
+						}
+
+						if (BossShotCount4 == 0) {
+							IsBulletShot1 = true;
+							IsBulletShot2 = true;
+							IsBulletShot3 = true;
+							IsBulletShot4 = true;
+							IsBulletShot5 = true;
+							IsBulletShot6 = true;
+							IsBulletShot7 = true;
+							IsBulletShot8 = true;
+
+							bullet1.position.x = 1100;
+							bullet1.position.y = 0;
+
+							bullet2.position.x = 1100;
+							bullet2.position.y = 10;
+
+							bullet3.position.x = 1100;
+							bullet3.position.y = 50;
+
+							bullet4.position.x = 1100;
+							bullet4.position.y = 90;
+
+							bullet5.position.x = 1100;
+							bullet5.position.y = 130;
+
+							bullet6.position.x = 1100;
+							bullet6.position.y = 170;
+
+
+
+
+
+							bullet7.position.x = 1100;
+							bullet7.position.y = 440;
+
+							bullet8.position.x = 1100;
+							bullet8.position.y = 480;
+						}
+
+
+						if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 && IsBulletShot4 && IsBulletShot5 && IsBulletShot6 && IsBulletShot7 && IsBulletShot8 == true) {
+							bullet1.position.x -= bullet1.speed;
+							bullet2.position.x -= bullet2.speed;
+							bullet3.position.x -= bullet3.speed;
+							bullet4.position.x -= bullet4.speed;
+							bullet5.position.x -= bullet5.speed;
+							bullet6.position.x -= bullet6.speed;
+							bullet7.position.x -= bullet7.speed;
+							bullet8.position.x -= bullet8.speed;
+						}
+
+						if (bullet1.position.x && bullet2.position.x && bullet3.position.x && bullet4.position.x && bullet5.position.x && bullet6.position.x && bullet7.position.x && bullet8.position.x < 0) {
+							IsBulletShot1 = false;
+							IsBulletShot2 = false;
+							IsBulletShot3 = false;
+							IsBulletShot4 = false;
+							IsBulletShot5 = false;
+							IsBulletShot6 = false;
+							IsBulletShot7 = false;
+							IsBulletShot8 = false;
+
+							BossShotCount4 = 30;
+							BossAction4 = false;
+
+							bullet1.position.x = 1100;
+							bullet1.position.y = 0;
+
+							bullet2.position.x = 1100;
+							bullet2.position.y = 10;
+
+							bullet3.position.x = 1100;
+							bullet3.position.y = 50;
+
+							bullet4.position.x = 1100;
+							bullet4.position.y = 90;
+
+							bullet5.position.x = 1100;
+							bullet5.position.y = 130;
+
+							bullet6.position.x = 1100;
+							bullet6.position.y = 170;
+
+
+
+
+
+							bullet7.position.x = 1100;
+							bullet7.position.y = 440;
+
+							bullet8.position.x = 1100;
+							bullet8.position.y = 480;
+
+							randnum = 0;
+						}
+					}
+				}
 
 				newposY = (player.position.y - 480) * -1;//ここでplayerのY座標を決める
 				NewBossPosY = (boss.position.y - 415) * -1;//ここでplayerのY座標を決める
+
+				Novice::ScreenPrintf(0, 0, "%f", boss.position.x);
+				Novice::ScreenPrintf(0, 20, "%f", boss.position.y);
+
+				Novice::ScreenPrintf(0, 400, "timer = %d", timer);
+				Novice::ScreenPrintf(0, 420, "randnum = %d", randnum);
+
 
 				break;
 
@@ -682,16 +960,32 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				Novice::DrawSprite((int)bullet3.position.x, (int)bullet3.position.y + 32, BossBulletHandle, bullet3.scale, bullet3.scale, 0.0f, WHITE);
 			}
 
-			if (IsBoss1 == true) {
+			if (IsBulletShot4 == true) {
+				Novice::DrawSprite((int)bullet4.position.x, (int)bullet4.position.y + 32, BossBulletHandle, bullet4.scale, bullet4.scale, 0.0f, WHITE);
+			}
+
+			if (IsBulletShot5 == true) {
+				Novice::DrawSprite((int)bullet5.position.x, (int)bullet5.position.y + 32, BossBulletHandle, bullet5.scale, bullet5.scale, 0.0f, WHITE);
+			}
+
+			if (IsBulletShot6 == true) {
+				Novice::DrawSprite((int)bullet6.position.x, (int)bullet6.position.y + 32, BossBulletHandle, bullet6.scale, bullet6.scale, 0.0f, WHITE);
+			}
+
+			if (IsBulletShot7 == true) {
+				Novice::DrawSprite((int)bullet7.position.x, (int)bullet7.position.y + 32, BossBulletHandle, bullet7.scale, bullet7.scale, 0.0f, WHITE);
+			}
+
+			if (IsBulletShot8 == true) {
+				Novice::DrawSprite((int)bullet8.position.x, (int)bullet8.position.y + 32, BossBulletHandle, bullet8.scale, bullet8.scale, 0.0f, WHITE);
+			}
+
+			if (IsBoss == true) {
 				Novice::DrawSprite((int)boss.position.x, (int)boss.position.y, BossHandle, 1.0f, 1.0f, 0.0f, WHITE);
 			}
 
-			if (IsBoss2 == true) {
-				Novice::DrawSprite((int)boss.position.x, (int)boss.position.y, BossHandle, 1.0f, 1.0f, 0.0f, WHITE);
-			}
-
-			if (IsBoss3 == true) {
-				Novice::DrawSprite((int)boss.position.x, (int)boss.position.y, BossHandle, 1.0f, 1.0f, 0.0f, WHITE);
+			for (int i = 0; i < playerHp; i++) {
+				Novice::DrawSprite(i * 32, 0, HpHandle, 1, 1, 0.0f, WHITE);
 			}
 
 			break;
