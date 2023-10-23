@@ -98,6 +98,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Vector2 position;
 		float scale;
 		float speed;
+		float radius;
 	}BossBullet;
 
 	float NewBossPosY = 0;
@@ -133,8 +134,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//スクロール時の弾のクールタイムを15に設定する
 
 	float Distance = 0.0f;//弾の当たり判定用の変数を用意
-
-	float PlayerDistance = 0.0f;
 
 	int BulletAttack = 1;
 	int playerHp = 5;
@@ -186,7 +185,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	BossBullet bullet8{
 		{0,0},
 		1.0f,
-		10.0f
+		5.0f
 	};
 
 	bool IsBulletShot1 = false;
@@ -210,8 +209,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	bool BossAction3 = true;
 	bool BossAction4 = true;
 
+	int BossBulletAttack1 = 1;
 
-	//ためし
 	time_t Time = time(nullptr);
 
 	srand((unsigned int)Time);
@@ -506,14 +505,35 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					}
 
 
-					if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 && IsBulletShot4 && IsBulletShot5 && IsBulletShot6 && IsBulletShot7 && IsBulletShot8 == true) {
+					if (IsBulletShot1 == true) {
 						bullet1.position.x -= bullet1.speed;
+					}
+
+					if (IsBulletShot2 == true) {
 						bullet2.position.x -= bullet2.speed;
+					}
+
+					if (IsBulletShot3 == true) {
 						bullet3.position.x -= bullet3.speed;
+					}
+
+					if (IsBulletShot4 == true) {
 						bullet4.position.x -= bullet4.speed;
+					}
+
+					if (IsBulletShot5 == true) {
 						bullet5.position.x -= bullet5.speed;
+					}
+
+					if (IsBulletShot6 == true) {
 						bullet6.position.x -= bullet6.speed;
+					}
+
+					if (IsBulletShot7 == true) {
 						bullet7.position.x -= bullet7.speed;
+					}
+
+					if (IsBulletShot8 == true) {
 						bullet8.position.x -= bullet8.speed;
 					}
 
@@ -611,14 +631,35 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					}
 
 
-					if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 && IsBulletShot4 && IsBulletShot5 && IsBulletShot6 && IsBulletShot7 && IsBulletShot8 == true) {
+					if (IsBulletShot1 == true) {
 						bullet1.position.x -= bullet1.speed;
+					}
+
+					if (IsBulletShot2 == true) {
 						bullet2.position.x -= bullet2.speed;
+					}
+
+					if (IsBulletShot3 == true) {
 						bullet3.position.x -= bullet3.speed;
+					}
+
+					if (IsBulletShot4 == true) {
 						bullet4.position.x -= bullet4.speed;
+					}
+
+					if (IsBulletShot5 == true) {
 						bullet5.position.x -= bullet5.speed;
+					}
+
+					if (IsBulletShot6 == true) {
 						bullet6.position.x -= bullet6.speed;
+					}
+
+					if (IsBulletShot7 == true) {
 						bullet7.position.x -= bullet7.speed;
+					}
+
+					if (IsBulletShot8 == true) {
 						bullet8.position.x -= bullet8.speed;
 					}
 
@@ -715,14 +756,35 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					}
 
 
-					if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 && IsBulletShot4 && IsBulletShot5 && IsBulletShot6 && IsBulletShot7 && IsBulletShot8 == true) {
+					if (IsBulletShot1 == true) {
 						bullet1.position.x -= bullet1.speed;
+					}
+
+					if (IsBulletShot2 == true) {
 						bullet2.position.x -= bullet2.speed;
+					}
+
+					if (IsBulletShot3 == true) {
 						bullet3.position.x -= bullet3.speed;
+					}
+
+					if (IsBulletShot4 == true) {
 						bullet4.position.x -= bullet4.speed;
+					}
+
+					if (IsBulletShot5 == true) {
 						bullet5.position.x -= bullet5.speed;
+					}
+
+					if (IsBulletShot6 == true) {
 						bullet6.position.x -= bullet6.speed;
+					}
+
+					if (IsBulletShot7 == true) {
 						bullet7.position.x -= bullet7.speed;
+					}
+
+					if (IsBulletShot8 == true) {
 						bullet8.position.x -= bullet8.speed;
 					}
 
@@ -823,14 +885,35 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					}
 
 
-					if (IsBulletShot1 && IsBulletShot2 && IsBulletShot3 && IsBulletShot4 && IsBulletShot5 && IsBulletShot6 && IsBulletShot7 && IsBulletShot8 == true) {
+					if (IsBulletShot1 == true) {
 						bullet1.position.x -= bullet1.speed;
+					}
+
+					if (IsBulletShot2 == true) {
 						bullet2.position.x -= bullet2.speed;
+					}
+
+					if (IsBulletShot3 == true) {
 						bullet3.position.x -= bullet3.speed;
+					}
+
+					if (IsBulletShot4 == true) {
 						bullet4.position.x -= bullet4.speed;
+					}
+
+					if (IsBulletShot5 == true) {
 						bullet5.position.x -= bullet5.speed;
+					}
+
+					if (IsBulletShot6 == true) {
 						bullet6.position.x -= bullet6.speed;
+					}
+
+					if (IsBulletShot7 == true) {
 						bullet7.position.x -= bullet7.speed;
+					}
+
+					if (IsBulletShot8 == true) {
 						bullet8.position.x -= bullet8.speed;
 					}
 
@@ -879,6 +962,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					}
 				}
 			}
+
+			//BOSSの弾の当たり判定
+			
+
 
 				newposY = (player.position.y - 480) * -1;//ここでplayerのY座標を決める
 				NewBossPosY = (boss.position.y - 415) * -1;//ここでplayerのY座標を決める
