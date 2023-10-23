@@ -145,8 +145,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	PlayerDistance[6] = 0.0f;
 	PlayerDistance[7] = 0.0f;
 	
+	int BossBulletAttack[8];
+	BossBulletAttack[0] = 1;
+	BossBulletAttack[1] = 1;
+	BossBulletAttack[2] = 1;
+	BossBulletAttack[3] = 1;
+	BossBulletAttack[4] = 1;
+	BossBulletAttack[5] = 1;
+	BossBulletAttack[6] = 1;
+	BossBulletAttack[7] = 1;
+
 	int BulletAttack = 1;
-	int playerHp = 5;
+	int playerHp = 5;;
 
 	//==================================================<Bossの弾の宣言と初期化>===================================================
 
@@ -1169,6 +1179,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					(bullet1.position.y - newposY) * (bullet1.position.y - newposY));
 				if (PlayerDistance[0] <= bullet1.radius + player.radius + bullet1.radius + player.radius) {
 					IsBulletShot1 = false;
+					playerHp = playerHp - BossBulletAttack[0];
 				}
 			}
 
@@ -1178,6 +1189,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					(bullet2.position.y - newposY) * (bullet2.position.y - newposY));
 				if (PlayerDistance[1] <= bullet2.radius + player.radius + bullet2.radius + player.radius) {
 					IsBulletShot2 = false;
+					playerHp = playerHp - BossBulletAttack[1];
 				}
 			}
 
@@ -1187,6 +1199,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					(bullet3.position.y - newposY) * (bullet3.position.y - newposY));
 				if (PlayerDistance[2] <= bullet3.radius + player.radius + bullet3.radius + player.radius) {
 					IsBulletShot3 = false;
+					playerHp = playerHp - BossBulletAttack[2];
 				}
 			}
 
@@ -1196,6 +1209,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					                      (bullet4.position.y - newposY) * (bullet4.position.y - newposY));
 				if (PlayerDistance[3] <= bullet4.radius + player.radius + bullet4.radius + player.radius) {
 					IsBulletShot4 = false;
+					playerHp = playerHp - BossBulletAttack[3];
 				}
 			}
 
@@ -1205,6 +1219,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					(bullet5.position.y - newposY) * (bullet5.position.y - newposY));
 				if (PlayerDistance[4] <= bullet5.radius + player.radius + bullet5.radius + player.radius) {
 					IsBulletShot5 = false;
+					playerHp = playerHp - BossBulletAttack[4];
 				}
 			}
 
@@ -1214,6 +1229,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					(bullet6.position.y - newposY) * (bullet6.position.y - newposY));
 				if (PlayerDistance[5] <= bullet6.radius + player.radius + bullet6.radius + player.radius) {
 					IsBulletShot6 = false;
+					playerHp = playerHp - BossBulletAttack[5];
 				}
 			}
 
@@ -1223,6 +1239,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					(bullet7.position.y - newposY) * (bullet7.position.y - newposY));
 				if (PlayerDistance[6] <= bullet7.radius + player.radius + bullet7.radius + player.radius) {
 					IsBulletShot7 = false;
+					playerHp = playerHp - BossBulletAttack[6];
 				}
 			}
 
@@ -1232,6 +1249,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					(bullet8.position.y - newposY) * (bullet8.position.y - newposY));
 				if (PlayerDistance[7] <= bullet8.radius + player.radius + bullet8.radius + player.radius) {
 					IsBulletShot8 = false;
+					playerHp = playerHp - BossBulletAttack[7];
 				}
 			}
 
