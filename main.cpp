@@ -56,12 +56,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int HpHandle = Novice::LoadTexture("./heart.png");//HP
 	int sample = Novice::LoadTexture("./sample.png");//プレイヤーの描画
 	int playerHp = 5;
-	int isPlayerHit = 0;
 	int Jampsystem = 0;
 	int IsJump = 0;//ジャンプしたら1
 	int isjampTimer = 0;//ジャンプタイマー始動変数
 	int jampTimer = 25;//ジャンプのラグ
 	float newposY = 0;
+	bool isReject1 = false;
+	bool isReject2 = false;
+	bool isReject3 = false;
+	bool isReject4 = false;
+	bool isReject5 = false;
+	bool isReject6 = false;
+	bool isReject7 = false;
+	bool isReject8 = false;
 
 
 
@@ -76,7 +83,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		float FrontY;
 		float BackY;
 		unsigned int color;
-		int isShot;
+		bool isShot;
 
 	}Bullet;
 	const int Max = 7;
@@ -96,6 +103,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int BulletHandle = Novice::LoadTexture("./tama_sample_green.png");
 	int BulletCoolTimer = 10;//スクロール時の弾のクールタイムを15に設定する
 
+
+
 	//Boss構造体の宣言
 	typedef struct Boss {
 		Vector2 position;
@@ -105,6 +114,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		{1200,220},
 		10
 	};
+	int BossHandle = Novice::LoadTexture("./Boss1.png");
 
 
 	//bossの弾
@@ -117,7 +127,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		float RightX;
 		float FrontY;
 		float BackY;
-		int isBulletShot;
+		bool isBulletShot;
 	}BossBullet;
 	const int Max2 = 8;
 	BossBullet bossBullet[Max2];
@@ -133,8 +143,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		bossBullet[i].isBulletShot= false;
 	}
 	float NewBossPosY = 0;
-	int BossHandle = Novice::LoadTexture("./Boss1.png");
-
+	int BossBulletHandle = Novice::LoadTexture("./tama.png");
 
 	
 	int BackGround[6];//int型配列BackGroundを要素数6で宣言し、LoadTextureで背景画像を6つ読み込む
@@ -146,26 +155,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	BackGround[5] = Novice::LoadTexture("./bg6.png");
 
 
-
-	int BackGround = Novice::LoadTexture("./bg.png");
-
-	int BossHandle = Novice::LoadTexture("./Boss1.png");
-	//int型変数BossHandleを宣言し、LoadTextureでBOSS画像を読み込む
-
-	int BossBulletHandle = Novice::LoadTexture("./tama.png");
 	
-	//int型変数BossBulletHandleを宣言し、LoadTextureでBOSSの弾を読み込む
-
-
-	//int worldPosX = 640;//ワールドから見た自機のX座標を640で初期化する
-
-	//int scrollX = 0;//ワールド座標のスクロール値を0で初期化する
-
-	//int monitorX = worldPosX - scrollX;//ワールド座標とスクロール値を引いた値をモニターから見た自分の座標に代入する
+	//画面スクロール
+	int worldPosX = 640;//ワールドから見た自機のX座標を640で初期化する
+	int scrollX = 0;//ワールド座標のスクロール値を0で初期化する
+	int monitorX = worldPosX - scrollX;//ワールド座標とスクロール値を引いた値をモニターから見た自分の座標に代入する
+	int ScrollSpeedX = 5;
 
 
 
 	float Distance = 0.0f;//弾の当たり判定用の変数を用意
+
 
 	float PlayerDistance[8];
 	PlayerDistance[0] = 0.0f;
@@ -188,14 +188,69 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	BossBulletAttack[7] = 1;
 
 	int BulletAttack = 1;
-	int playerHp = 15;
+	
 
-	//bool IsReject = false;
+	//double homing=sqrt()
 
 	
+
 	//==================================================<Bossの弾の宣言と初期化>===================================================
 
-	//-----
+	BossBullet bullet1{
+		{0,0},
+		1.0f,
+		10.0f,
+		10.0f
+	};
+
+	BossBullet bullet2{
+		{0,0},
+		1.0f,
+		10.0f,
+		10.0f
+	};
+
+	BossBullet bullet3{
+		{0,0},
+		1.0f,
+		10.0f,
+		10.0f
+	};
+
+	BossBullet bullet4{
+		{0,0},
+		1.0f,
+		10.0f,
+		10.0f
+	};
+
+	BossBullet bullet5{
+		{0,0},
+		1.0f,
+		10.0f,
+		10.0f
+	};
+
+	BossBullet bullet6{
+		{0,0},
+		1.0f,
+		10.0f,
+		10.0f
+	};
+
+	BossBullet bullet7{
+		{0,0},
+		1.0f,
+		10.0f,
+		10.0f
+	};
+
+	BossBullet bullet8{
+		{0,0},
+		1.0f,
+		10.0f,
+		10.0f
+	};
 
 	bool IsBulletShot1 = false;
 	bool IsBulletShot2 = false;
@@ -224,16 +279,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	int randnum = 0;
 
-	int timer = 50;
+	int bossBulletTimer = 50;
 
-	/*bool isReject1 = false;
-	bool isReject2 = false;
-	bool isReject3 = false;
-	bool isReject4 = false;
-	bool isReject5 = false;
-	bool isReject6 = false;
-	bool isReject7 = false;
-	bool isReject8 = false;*/
+	
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -273,10 +321,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			BossAction3 = true;
 			BossAction4 = true;
 
-			/*worldPosX = 640;
+			worldPosX = 640;
 			scrollX = 0;
-			ScrollSpeedX = 5;*/
-			screen.position.x = 0;
+			ScrollSpeedX = 5;
 			playerHp = 15;
 
 			if (keys[DIK_SPACE] && preKeys[DIK_SPACE] == false) {
@@ -288,57 +335,28 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			
 
-			//プレイヤーの当たり判定初期化
-			player.LeftX = player.position.x - player.radius.x;
-			player.RightX = player.position.x + player.radius.x;
-			player.FrontY = newposY - player.radius.y;
-			player.BackY = newposY + player.radius.y;
-
-			//スクロール中の敵の弾の当たり判定初期化
-			for (int i = 0; i < Max2; i++) {
-				bullet[i].LeftX = bullet[i].position.x - bullet[i].radius;
-				bullet[i].RightX = bullet[i].position.x + bullet[i].radius;
-				bullet[i].FrontY = bullet[i].position.y - bullet[i].radius;
-				bullet[i].BackY = bullet[i].position.y + bullet[i].radius;
-			}
-			// スクロール中の敵の弾の当たり判定
-			for (int i = 0; i < Max; i++) {
-				if (bullet[i].LeftX <= player.RightX && player.LeftX <= bullet[i].RightX && bullet[i].FrontY <= player.BackY && player.FrontY <= bullet[i].BackY)
-				{
-					isPlayerHit = 1;
-				}
-				else {
-					isPlayerHit = 0;
-				}
-			}
-
-
-
-
-
-
 
 
 			//背景のスクロール
 
-			//worldPosX += ScrollSpeedX;//ワールド座標を右方向に動かす
-			//scrollX += ScrollSpeedX;//スクロール値も更新する
+			worldPosX += ScrollSpeedX;//ワールド座標を右方向に動かす
+			scrollX += ScrollSpeedX;//スクロール値も更新する
 
-			////背景のスクロール処理==========================================================================
-			//if (worldPosX > 7623) {
-			//	scrollX -= ScrollSpeedX;
-			//}
+			//背景のスクロール処理==========================================================================
+			if (worldPosX > 7623) {
+				scrollX -= ScrollSpeedX;
+			}
 
-			//if (worldPosX > 7040 || worldPosX > 7680) {//ワールド座標が3200かつ3840の場合
-			//	scrollX = 6400;//スクロール値を6400で固定する
-			//}
+			if (worldPosX > 7040 || worldPosX > 7680) {//ワールド座標が3200かつ3840の場合
+				scrollX = 6400;//スクロール値を6400で固定する
+			}
 
-			//monitorX = worldPosX - scrollX;
+			monitorX = worldPosX - scrollX;
 
-			//if (scrollX == 6400) {//スクロール値が6400まで到達したら
-			//	ScrollSpeedX = 0;//スクロールのスピードを0にする
-			//	Scene = BOSS;
-			//}
+			if (scrollX == 6400) {//スクロール値が6400まで到達したら
+				ScrollSpeedX = 0;//スクロールのスピードを0にする
+				Scene = BOSS;
+			}
 
 			//スクロール時の複数弾の処理====================================================================
 			if (worldPosX <= 7040) {
@@ -525,11 +543,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			//==========================================<Bossの弾の更新処理 ここから>==========================================
 
-			if (timer > 0) {
-				timer--;//タイマーが０になるまでマイナスする
+			if (bossBulletTimer > 0) {
+				bossBulletTimer--;//タイマーが０になるまでマイナスする
 			}
 
-			if (timer <= 0) {
+			if (bossBulletTimer <= 0) {
 				if (randnum == 0) {
 					randnum = rand() % 4 + 1;//タイマーが０以下になった時にrandnumが０だったらrandnum1.2.3.4のどれかになる
 				}
@@ -542,7 +560,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (randnum == 1) {//rand1が呼ばれたときにこの動作をする
 				BossAction1 = true;
 				if (BossAction1 == true) {//一つ目の
-					timer = 30;
+					bossBulletTimer = 30;
 
 					if (IsBoss == true) {
 						BossShotCount1--;
@@ -713,7 +731,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (randnum == 2) {//rand2が呼ばれたときにこの動作をする
 				BossAction2 = true;
 				if (BossAction2 == true) {//二つ目の
-					timer = 30;
+					bossBulletTimer = 30;
 
 					if (IsBoss == true) {
 						BossShotCount2--;
@@ -883,7 +901,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (randnum == 3) {//rand3が呼ばれたときにこの動作をする
 				BossAction3 = true;
 				if (BossAction3 == true) {//三つ目の
-					timer = 30;
+					bossBulletTimer = 30;
 
 					if (IsBoss == true) {
 						BossShotCount3--;
@@ -1056,7 +1074,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (randnum == 4) {//rand4が呼ばれたときにこの動作をする
 				BossAction4 = true;
 				if (BossAction4 == true) {//四つ目の
-					timer = 30;
+					bossBulletTimer = 30;
 
 					if (IsBoss == true) {
 						BossShotCount4--;
@@ -1229,11 +1247,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (IsBulletShot1 == true) {
 				PlayerDistance[0] = sqrtf((bullet1.position.x - player.position.x) * (bullet1.position.x - player.position.x) +
 					(bullet1.position.y - newposY) * (bullet1.position.y - newposY));
-				if (PlayerDistance[0] <= bullet1.radius + player.radius + bullet1.radius + player.radius) {
+				if (PlayerDistance[0] <= bullet1.radius + player.radius + bullet1.radius + player.radius) {//当たったら
 					IsBulletShot1 = false;
 					playerHp = playerHp - BossBulletAttack[0];
+					if (player.hipDrop == true) {//ヒップドロップしてる間なら
+						isReject1 = true;
+					}
+					else {
+						isReject1 = false;
+					}
 				}
 			}
+
+			if (isReject1 == true) {
+
+			}
+
 
 			//===============================================IsBulletShot2の場合===================================================
 			if (IsBulletShot2 == true) {
@@ -1242,6 +1271,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (PlayerDistance[1] <= bullet2.radius + player.radius + bullet2.radius + player.radius) {
 					IsBulletShot2 = false;
 					playerHp = playerHp - BossBulletAttack[1];
+					if (player.hipDrop == true) {//ヒップドロップしてる間なら
+						isReject2 = true;
+					}
+					else {
+						isReject2 = false;
+					}
 				}
 			}
 
@@ -1252,6 +1287,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (PlayerDistance[2] <= bullet3.radius + player.radius + bullet3.radius + player.radius) {
 					IsBulletShot3 = false;
 					playerHp = playerHp - BossBulletAttack[2];
+					if (player.hipDrop == true) {//ヒップドロップしてる間なら
+						isReject3 = true;
+					}
+					else {
+						isReject3 = false;
+					}
 				}	
 			}
 
@@ -1262,6 +1303,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (PlayerDistance[3] <= bullet4.radius + player.radius + bullet4.radius + player.radius) {
 					IsBulletShot4 = false;
 					playerHp = playerHp - BossBulletAttack[3];
+					if (player.hipDrop == true) {//ヒップドロップしてる間なら
+						isReject4 = true;
+					}
+					else {
+						isReject4 = false;
+					}
 				}
 			}
 
@@ -1272,6 +1319,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (PlayerDistance[4] <= bullet5.radius + player.radius + bullet5.radius + player.radius) {
 					IsBulletShot5 = false;
 					playerHp = playerHp - BossBulletAttack[4];
+					if (player.hipDrop == true) {//ヒップドロップしてる間なら
+						isReject5 = true;
+					}
+					else {
+						isReject5 = false;
+					}
 				}
 				
 			}
@@ -1283,6 +1336,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (PlayerDistance[5] <= bullet6.radius + player.radius + bullet6.radius + player.radius) {
 					IsBulletShot6 = false;
 					playerHp = playerHp - BossBulletAttack[5];
+					if (player.hipDrop == true) {//ヒップドロップしてる間なら
+						isReject6 = true;
+					}
+					else {
+						isReject7 = false;
+					}
 				}
 			}
 
@@ -1295,6 +1354,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (PlayerDistance[6] <= bullet7.radius + player.radius + bullet7.radius + player.radius) {
 					IsBulletShot7 = false;
 					playerHp = playerHp - BossBulletAttack[6];
+					if (player.hipDrop == true) {//ヒップドロップしてる間なら
+						isReject7 = true;
+					}
+					else {
+						isReject7 = false;
+					}
 				}
 			}
 
@@ -1305,6 +1370,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (PlayerDistance[7] <= bullet8.radius + player.radius + bullet8.radius + player.radius) {
 					IsBulletShot8 = false;
 					playerHp = playerHp - BossBulletAttack[7];
+					if (player.hipDrop == true) {//ヒップドロップしてる間なら
+						isReject8 = true;
+					}
+					else {
+						isReject8 = false;
+					}
 				}
 			}
 
@@ -1320,7 +1391,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			newposY = (player.position.y - 480) * -1;//ここでplayerのY座標を決める
 			NewBossPosY = (boss.position.y - 415) * -1;//ここでplayerのY座標を決める
 
-			Novice::ScreenPrintf(0, 400, "timer = %d", timer);
+			Novice::ScreenPrintf(0, 400, "timer = %d", bossBulletTimer);
 			Novice::ScreenPrintf(0, 420, "randnum = %d", randnum);
 
 
@@ -1357,12 +1428,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			break;
 
 		case STAGE1:
-			Novice::DrawSprite(0 - scrollX, 0, BackGround, 1.0f, 1.0f, 0.0f, WHITE);
-			Novice::DrawSprite(1280 - scrollX, 0, BackGround, 1.0f, 1.0f, 0.0f, WHITE);
-			Novice::DrawSprite(2560 - scrollX, 0, BackGround, 1.0f, 1.0f, 0.0f, WHITE);
-			Novice::DrawSprite(3840 - scrollX, 0, BackGround, 1.0f, 1.0f, 0.0f, WHITE);
-			Novice::DrawSprite(5120 - scrollX, 0, BackGround, 1.0f, 1.0f, 0.0f, WHITE);
-			Novice::DrawSprite(6400 - scrollX, 0, BackGround, 1.0f, 1.0f, 0.0f, WHITE);
+			Novice::DrawSprite(0 - scrollX, 0, BackGround[0], 1.0f, 1.0f, 0.0f, WHITE);
+			Novice::DrawSprite(1280 - scrollX, 0, BackGround[1], 1.0f, 1.0f, 0.0f, WHITE);
+			Novice::DrawSprite(2560 - scrollX, 0, BackGround[2], 1.0f, 1.0f, 0.0f, WHITE);
+			Novice::DrawSprite(3840 - scrollX, 0, BackGround[3], 1.0f, 1.0f, 0.0f, WHITE);
+			Novice::DrawSprite(5120 - scrollX, 0, BackGround[4], 1.0f, 1.0f, 0.0f, WHITE);
+			Novice::DrawSprite(6400 - scrollX, 0, BackGround[5], 1.0f, 1.0f, 0.0f, WHITE);
 
 			Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, sample, player.scale, player.scale, 0.0f, WHITE);
 
@@ -1381,7 +1452,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		case BOSS:
 
-			Novice::DrawSprite(6400 - scrollX, 0, BackGround, 1.0f, 1.0f, 0.0f, WHITE);
+			Novice::DrawSprite(6400 - scrollX, 0, BackGround[5], 1.0f, 1.0f, 0.0f, WHITE);
 
 			Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, sample, player.scale, player.scale, 0.0f, WHITE);
 
