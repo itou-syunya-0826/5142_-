@@ -23,6 +23,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		GAMEOVER,
 	};
 
+
 	OneButton Scene = TITLE;
 
 	//Vector2構造体の宣言
@@ -30,6 +31,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		float x;
 		float y;
 	}Vecter2;
+
+
 
 	//Player構造体の宣言
 	typedef struct Player {
@@ -39,9 +42,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		float radius;
 		float scale;//1
 		float speed;//20
+		float LeftX;
+		float RightX;
+		float FrontY;
+		float BackY;
 	}Player;
-
-	//Player構造体の初期化
 	Player player{
 		{100.0f,0.0f},
 		{0.0f,0.0f},
@@ -49,84 +54,125 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		14.0f,
 		1.0f,
 		20.0f,
+		0.0f,0.0f,0.0f,0.0f
 	};
+	int HpHandle = Novice::LoadTexture("./heart.png");//HP
 	int sample = Novice::LoadTexture("./sample.png");//プレイヤーの描画
-
+	int playerHp = 5;
+	int isPlayerHit = 0;
 	int Jampsystem = 0;
-	int IsJump = 0;
-	int isjampTimer = 0;
+	int IsJump = 0;//ジャンプしたら1
+	int isjampTimer = 0;//ジャンプタイマー始動変数
 	int jampTimer = 25;//ジャンプのラグ
 	float newposY = 0;
 
-	//スクロール時のBullet構造体の宣言===================================================================
+
+
+	//スクロール時のBullet構造体の宣言
 	typedef struct Bullet {
 
 		Vector2 position;
 		float radius;
 		float speed;
+		float LeftX;
+		float RightX;
+		float FrontY;
+		float BackY;
 		unsigned int color;
-		bool isShot;
+		int isShot;
 
 	}Bullet;
-
-	//スクロール時のBullet構造体の初期化================================================================
-
-	const int Max = 7;//int型変数Maxを宣言し,値を7で初期化する
+	const int Max = 7;
 	Bullet bullet[Max];
 	for (int i = 0; i < Max; i++) {
 		bullet[i].position.x = 0.0f;
 		bullet[i].position.y = -10.0f;
 		bullet[i].radius = 10.0f;
 		bullet[i].speed = 7.0f;
+		bullet[i].LeftX = 0.0f;
+		bullet[i].RightX = 0.0f;
+		bullet[i].FrontY = 0.0f;
+		bullet[i].BackY = 0.0f;
 		bullet[i].color = WHITE;
 		bullet[i].isShot = false;
 	}
+	int BulletHandle = Novice::LoadTexture("./tama_sample_green.png");
+	int BulletCoolTimer = 10;//スクロール時の弾のクールタイムを15に設定する
 
-	//Boss構造体の宣言==================================================================================
+	//Boss構造体の宣言
 	typedef struct Boss {
 		Vector2 position;
 		unsigned int color;
 	}Boss;
-
-	//Boss構造体の初期化================================================================================
 	Boss boss{
 		{1200,220},
 		10
 	};
 
+
+	//bossの弾
 	typedef struct BossBullet {
 		Vector2 position;
 		float scale;
 		float speed;
 		float radius;
+		float LeftX;
+		float RightX;
+		float FrontY;
+		float BackY;
+		int isBulletShot;
 	}BossBullet;
-
+	const int Max2 = 8;
+	BossBullet bossBullet[Max2];
+	for (int i = 0; i < Max2; i++) {
+		bossBullet[i].position.x = 0.0f;
+		bossBullet[i].position.y = 0.0f;
+		bossBullet[i].scale = 1.0f;
+		bossBullet[i].speed = 10.0f;
+		bossBullet[i].LeftX = 0.0f;
+		bossBullet[i].RightX = 0.0f;
+		bossBullet[i].FrontY = 0.0f;
+		bossBullet[i].BackY = 0.0f;
+		bossBullet[i].isBulletShot= false;
+	}
 	float NewBossPosY = 0;
-
-	int ScrollSpeedX = 5;//背景が動く速さ
-
-	int BackGround = Novice::LoadTexture("./bg.png");
-	
-
 	int BossHandle = Novice::LoadTexture("./Boss1.png");
-	//int型変数BossHandleを宣言し、LoadTextureでBOSS画像を読み込む
 
-	int BossBulletHandle = Novice::LoadTexture("./tama.png");
 
-	//int型変数BossBulletHandleを宣言し、LoadTextureでBOSSの弾を読み込む
+	
+	int BackGround[6];//int型配列BackGroundを要素数6で宣言し、LoadTextureで背景画像を6つ読み込む
+	BackGround[0] = Novice::LoadTexture("./bg1.png");
+	BackGround[1] = Novice::LoadTexture("./bg2.png");
+	BackGround[2] = Novice::LoadTexture("./bg3.png");
+	BackGround[3] = Novice::LoadTexture("./bg4.png");
+	BackGround[4] = Novice::LoadTexture("./bg5.png");
+	BackGround[5] = Novice::LoadTexture("./bg6.png");
 
-	int BulletHandle = Novice::LoadTexture("./tama_sample_green.png");
 
-	int HpHandle = Novice::LoadTexture("./heart.png");
 
-	int worldPosX = 640;//ワールドから見た自機のX座標を640で初期化する
+	//スクリーン
+	typedef struct screen {
+		Vector2 position;
+		int speed;
+	}screen;
+	screen screen = {
+		{0,0},
+		5,
+	};
+	int gameTimer = 0;//敵が出てくるまでの時間
 
-	int scrollX = 0;//ワールド座標のスクロール値を0で初期化する
 
-	int monitorX = worldPosX - scrollX;//ワールド座標とスクロール値を引いた値をモニターから見た自分の座標に代入する
 
-	int BulletCoolTimer = 10;
-	//スクロール時の弾のクールタイムを15に設定する
+
+
+
+	//int worldPosX = 640;//ワールドから見た自機のX座標を640で初期化する
+
+	//int scrollX = 0;//ワールド座標のスクロール値を0で初期化する
+
+	//int monitorX = worldPosX - scrollX;//ワールド座標とスクロール値を引いた値をモニターから見た自分の座標に代入する
+
+
 
 	float Distance = 0.0f;//弾の当たり判定用の変数を用意
 
@@ -151,65 +197,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	BossBulletAttack[7] = 1;
 
 	int BulletAttack = 1;
-	int playerHp = 15;
+	
 
-	//==================================================<Bossの弾の宣言と初期化>===================================================
-
-	BossBullet bullet1{
-		{0,0},
-		1.0f,
-		10.0f,
-		10.0f
-	};
-
-	BossBullet bullet2{
-		{0,0},
-		1.0f,
-		10.0f,
-		10.0f
-	};
-
-	BossBullet bullet3{
-		{0,0},
-		1.0f,
-		10.0f,
-		10.0f
-	};
-
-	BossBullet bullet4{
-		{0,0},
-		1.0f,
-		10.0f,
-		10.0f
-	};
-
-	BossBullet bullet5{
-		{0,0},
-		1.0f,
-		10.0f,
-		10.0f
-	};
-
-	BossBullet bullet6{
-		{0,0},
-		1.0f,
-		10.0f,
-		10.0f
-	};
-
-	BossBullet bullet7{
-		{0,0},
-		1.0f,
-		10.0f,
-		10.0f
-	};
-
-	BossBullet bullet8{
-		{0,0},
-		1.0f,
-		10.0f,
-		10.0f
-	};
+	//-----
 
 	bool IsBulletShot1 = false;
 	bool IsBulletShot2 = false;
@@ -281,9 +271,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			BossAction3 = true;
 			BossAction4 = true;
 
-			worldPosX = 640;
+			/*worldPosX = 640;
 			scrollX = 0;
-			ScrollSpeedX = 5;
+			ScrollSpeedX = 5;*/
+			screen.position.x = 0;
 			playerHp = 15;
 
 			if (keys[DIK_SPACE] && preKeys[DIK_SPACE] == false) {
@@ -293,28 +284,59 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		case STAGE1:
 
-			//playerの挙動
+			
+
+			//プレイヤーの当たり判定初期化
+			player.LeftX = player.position.x - player.radius.x;
+			player.RightX = player.position.x + player.radius.x;
+			player.FrontY = newposY - player.radius.y;
+			player.BackY = newposY + player.radius.y;
+
+			//スクロール中の敵の弾の当たり判定初期化
+			for (int i = 0; i < Max2; i++) {
+				bullet[i].LeftX = bullet[i].position.x - bullet[i].radius;
+				bullet[i].RightX = bullet[i].position.x + bullet[i].radius;
+				bullet[i].FrontY = bullet[i].position.y - bullet[i].radius;
+				bullet[i].BackY = bullet[i].position.y + bullet[i].radius;
+			}
+			// スクロール中の敵の弾の当たり判定
+			for (int i = 0; i < Max; i++) {
+				if (bullet[i].LeftX <= player.RightX && player.LeftX <= bullet[i].RightX && bullet[i].FrontY <= player.BackY && player.FrontY <= bullet[i].BackY)
+				{
+					isPlayerHit = 1;
+				}
+				else {
+					isPlayerHit = 0;
+				}
+			}
+
+
+
+
+
+
+
 
 			//背景のスクロール
 
-			worldPosX += ScrollSpeedX;//ワールド座標を右方向に動かす
-			scrollX += ScrollSpeedX;//スクロール値も更新する
+			//worldPosX += ScrollSpeedX;//ワールド座標を右方向に動かす
+			//scrollX += ScrollSpeedX;//スクロール値も更新する
 
-			//背景のスクロール処理==========================================================================
-			if (worldPosX > 7623) {
-				scrollX -= ScrollSpeedX;
-			}
+			////背景のスクロール処理==========================================================================
+			//if (worldPosX > 7623) {
+			//	scrollX -= ScrollSpeedX;
+			//}
 
-			if (worldPosX > 7040 || worldPosX > 7680) {//ワールド座標が3200かつ3840の場合
-				scrollX = 6400;//スクロール値を6400で固定する
-			}
+			//if (worldPosX > 7040 || worldPosX > 7680) {//ワールド座標が3200かつ3840の場合
+			//	scrollX = 6400;//スクロール値を6400で固定する
+			//}
 
-			monitorX = worldPosX - scrollX;
+			//monitorX = worldPosX - scrollX;
 
-			if (scrollX == 6400) {//スクロール値が6400まで到達したら
-				ScrollSpeedX = 0;//スクロールのスピードを0にする
-				Scene = BOSS;
-			}
+			//if (scrollX == 6400) {//スクロール値が6400まで到達したら
+			//	ScrollSpeedX = 0;//スクロールのスピードを0にする
+			//	Scene = BOSS;
+			//}
 
 			//スクロール時の複数弾の処理====================================================================
 			if (worldPosX <= 7040) {
@@ -338,10 +360,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
-			for (int i = 0; i < Max; i++) {//for文処理
-				if (bullet[i].isShot == true) {//bullet[i].isShotがtrueだったら
-					bullet[i].position.x -= bullet[i].speed;
-					//スクロール時の弾を左方向に動かす
+			for (int i = 0; i < Max; i++) {
+				if (bullet[i].isShot == true) {//弾を打ったら
+					bullet[i].position.x -= bullet[i].speed;//スクロール時の弾を左方向に動かす
 
 					if (bullet[i].position.x <= -20) {//スクロール時の弾のX座標が0まで到達したら
 						bullet[i].isShot = false;//スクロール時の弾のフラグをfalseにする
