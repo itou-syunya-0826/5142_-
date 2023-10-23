@@ -135,6 +135,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	float Distance = 0.0f;//弾の当たり判定用の変数を用意
 
+	float PlayerDistance[8];
+	PlayerDistance[0] = 0.0f;
+	PlayerDistance[1] = 0.0f;
+	PlayerDistance[2] = 0.0f;
+	PlayerDistance[3] = 0.0f;
+	PlayerDistance[4] = 0.0f;
+	PlayerDistance[5] = 0.0f;
+	PlayerDistance[6] = 0.0f;
+	PlayerDistance[7] = 0.0f;
+	
 	int BulletAttack = 1;
 	int playerHp = 5;
 
@@ -144,48 +154,56 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		{0,0},
 		1.0f,
 		10.0f,
+		10.0f
 	};
 
 	BossBullet bullet2{
 		{0,0},
 		1.0f,
 		10.0f,
+		10.0f
 	};
 
 	BossBullet bullet3{
 		{0,0},
 		1.0f,
 		10.0f,
+		10.0f
 	};
 
 	BossBullet bullet4{
 		{0,0},
 		1.0f,
+		10.0f,
 		10.0f
 	};
 
 	BossBullet bullet5{
 		{0,0},
 		1.0f,
+		10.0f,
 		10.0f
 	};
 
 	BossBullet bullet6{
 		{0,0},
 		1.0f,
+		10.0f,
 		10.0f
 	};
 
 	BossBullet bullet7{
 		{0,0},
 		1.0f,
+		10.0f,
 		10.0f
 	};
 
 	BossBullet bullet8{
 		{0,0},
 		1.0f,
-		5.0f
+		10.0f,
+		10.0f
 	};
 
 	bool IsBulletShot1 = false;
@@ -209,7 +227,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	bool BossAction3 = true;
 	bool BossAction4 = true;
 
-	int BossBulletAttack1 = 1;
+	//int BossBulletAttack1 = 1;
 
 	time_t Time = time(nullptr);
 
@@ -537,48 +555,93 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						bullet8.position.x -= bullet8.speed;
 					}
 
-					if (bullet1.position.x && bullet2.position.x && bullet3.position.x && bullet4.position.x && bullet5.position.x && bullet6.position.x && bullet7.position.x && bullet8.position.x < 0) {
+					if (bullet1.position.x < 0) {
 						IsBulletShot1 = false;
-						IsBulletShot2 = false;
-						IsBulletShot3 = false;
-						IsBulletShot4 = false;
-						IsBulletShot5 = false;
-						IsBulletShot6 = false;
-						IsBulletShot7 = false;
-						IsBulletShot8 = false;
-
-						BossShotCount1 = 30;
-						BossAction1 = false;
-
 						bullet1.position.x = 1100;
 						bullet1.position.y = 0;
+						if (IsBulletShot1 == false) {
+							BossShotCount1 = 30;
+							BossAction1 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet2.position.x < 0) {
+						IsBulletShot2 = false;
 						bullet2.position.x = 1100;
 						bullet2.position.y = 10;
+						if (IsBulletShot2 == false) {
+							BossShotCount1 = 30;
+							BossAction1 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet3.position.x < 0) {
+						IsBulletShot3 = false;
 						bullet3.position.x = 1100;
 						bullet3.position.y = 50;
+						if (IsBulletShot3 == false) {
+							BossShotCount1 = 30;
+							BossAction1 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet4.position.x < 0) {
+						IsBulletShot4 = false;
 						bullet4.position.x = 1100;
 						bullet4.position.y = 90;
+						if (IsBulletShot4 == false) {
+							BossShotCount1 = 30;
+							BossAction1 = false;
+							randnum = 0;
+						}
+					}
 
-
-
-
-
+					if (bullet5.position.x < 0) {
+						IsBulletShot5 = false;
 						bullet5.position.x = 1100;
 						bullet5.position.y = 360;
+						if (IsBulletShot5 == false) {
+							BossShotCount1 = 30;
+							BossAction1 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet6.position.x < 0) {
+						IsBulletShot6 = false;
 						bullet6.position.x = 1100;
 						bullet6.position.y = 400;
+						if (IsBulletShot6 == false) {
+							BossShotCount1 = 30;
+							BossAction1 = false;
+							randnum = 0;
+						}
+					}
 
+
+					if (bullet7.position.x < 0) {
+						IsBulletShot7 = false;
 						bullet7.position.x = 1100;
 						bullet7.position.y = 440;
+						if (IsBulletShot7 == false) {
+							BossShotCount1 = 30;
+							BossAction1 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet8.position.x < 0) {
+						IsBulletShot8 = false;
 						bullet8.position.x = 1100;
 						bullet8.position.y = 480;
-
-						randnum = 0;
+						if (IsBulletShot8 == false) {
+							BossShotCount1 = 30;
+							BossAction1 = false;
+							randnum = 0;
+						}
 					}
 				}
 			}
@@ -663,44 +726,93 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						bullet8.position.x -= bullet8.speed;
 					}
 
-					if (bullet1.position.x && bullet2.position.x && bullet3.position.x && bullet4.position.x && bullet5.position.x && bullet6.position.x && bullet7.position.x && bullet8.position.x < 0) {
+					if (bullet1.position.x < 0) {
 						IsBulletShot1 = false;
-						IsBulletShot2 = false;
-						IsBulletShot3 = false;
-						IsBulletShot4 = false;
-						IsBulletShot5 = false;
-						IsBulletShot6 = false;
-						IsBulletShot7 = false;
-						IsBulletShot8 = false;
-
-						BossShotCount2 = 30;
-						BossAction2 = false;
-
 						bullet1.position.x = 1100;
 						bullet1.position.y = 90;
+						if (IsBulletShot1 == false) {
+							BossShotCount2 = 30;
+							BossAction2 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet2.position.x < 0) {
+						IsBulletShot2 = false;
 						bullet2.position.x = 1100;
 						bullet2.position.y = 100;
+						if (IsBulletShot2 == false) {
+							BossShotCount2 = 30;
+							BossAction2 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet3.position.x < 0) {
+						IsBulletShot3 = false;
 						bullet3.position.x = 1100;
 						bullet3.position.y = 140;
+						if (IsBulletShot3 == false) {
+							BossShotCount2 = 30;
+							BossAction2 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet4.position.x < 0) {
+						IsBulletShot4 = false;
 						bullet4.position.x = 1100;
 						bullet4.position.y = 180;
+						if (IsBulletShot4 == false) {
+							BossShotCount2 = 30;
+							BossAction2 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet5.position.x < 0) {
+						IsBulletShot5 = false;
 						bullet5.position.x = 1100;
 						bullet5.position.y = 220;
+						if (IsBulletShot5 == false) {
+							BossShotCount2 = 30;
+							BossAction2 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet6.position.x < 0) {
+						IsBulletShot6 = false;
 						bullet6.position.x = 1100;
 						bullet6.position.y = 260;
+						if (IsBulletShot6 == false) {
+							BossShotCount2 = 30;
+							BossAction2 = false;
+							randnum = 0;
+						}
+					}
 
+
+					if (bullet7.position.x < 0) {
+						IsBulletShot7 = false;
 						bullet7.position.x = 1100;
 						bullet7.position.y = 300;
+						if (IsBulletShot7 == false) {
+							BossShotCount2 = 30;
+							BossAction2 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet8.position.x < 0) {
+						IsBulletShot8 = false;
 						bullet8.position.x = 1100;
 						bullet8.position.y = 340;
-
-						randnum = 0;
+						if (IsBulletShot8 == false) {
+							BossShotCount2 = 30;
+							BossAction2 = false;
+							randnum = 0;
+						}
 					}
 				}
 			}
@@ -788,48 +900,93 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						bullet8.position.x -= bullet8.speed;
 					}
 
-					if (bullet1.position.x && bullet2.position.x && bullet3.position.x && bullet4.position.x && bullet5.position.x && bullet6.position.x && bullet7.position.x && bullet8.position.x < 0) {
+					if (bullet1.position.x < 0) {
 						IsBulletShot1 = false;
-						IsBulletShot2 = false;
-						IsBulletShot3 = false;
-						IsBulletShot4 = false;
-						IsBulletShot5 = false;
-						IsBulletShot6 = false;
-						IsBulletShot7 = false;
-						IsBulletShot8 = false;
-
-						BossShotCount3 = 30;
-						BossAction3 = false;
-
 						bullet1.position.x = 1100;
 						bullet1.position.y = 0;
+						if (IsBulletShot1 == false) {
+							BossShotCount3 = 30;
+							BossAction3 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet2.position.x < 0) {
+						IsBulletShot2 = false;
 						bullet2.position.x = 1100;
 						bullet2.position.y = 10;
+						if (IsBulletShot2 == false) {
+							BossShotCount3 = 30;
+							BossAction3 = false;
+							randnum = 0;
+						}
+					}
 
-
-
-
-
+					if (bullet3.position.x < 0) {
+						IsBulletShot3 = false;
 						bullet3.position.x = 1100;
 						bullet3.position.y = 280;
+						if (IsBulletShot3 == false) {
+							BossShotCount3 = 30;
+							BossAction3 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet4.position.x < 0) {
+						IsBulletShot4 = false;
 						bullet4.position.x = 1100;
 						bullet4.position.y = 320;
+						if (IsBulletShot4 == false) {
+							BossShotCount3 = 30;
+							BossAction3 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet5.position.x < 0) {
+						IsBulletShot5 = false;
 						bullet5.position.x = 1100;
 						bullet5.position.y = 360;
+						if (IsBulletShot5 == false) {
+							BossShotCount3 = 30;
+							BossAction3 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet6.position.x < 0) {
+						IsBulletShot6 = false;
 						bullet6.position.x = 1100;
 						bullet6.position.y = 400;
+						if (IsBulletShot6 == false) {
+							BossShotCount3 = 30;
+							BossAction3 = false;
+							randnum = 0;
+						}
+					}
 
+
+					if (bullet7.position.x < 0) {
+						IsBulletShot7 = false;
 						bullet7.position.x = 1100;
 						bullet7.position.y = 440;
+						if (IsBulletShot7 == false) {
+							BossShotCount3 = 30;
+							BossAction3 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet8.position.x < 0) {
+						IsBulletShot8 = false;
 						bullet8.position.x = 1100;
 						bullet8.position.y = 480;
-
-						randnum = 0;
+						if (IsBulletShot8 == false) {
+							BossShotCount3 = 30;
+							BossAction3 = false;
+							randnum = 0;
+						}
 					}
 				}
 			}
@@ -873,10 +1030,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						bullet6.position.x = 1100;
 						bullet6.position.y = 170;
 
-
-
-
-
 						bullet7.position.x = 1100;
 						bullet7.position.y = 440;
 
@@ -917,55 +1070,172 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						bullet8.position.x -= bullet8.speed;
 					}
 
-					if (bullet1.position.x && bullet2.position.x && bullet3.position.x && bullet4.position.x && bullet5.position.x && bullet6.position.x && bullet7.position.x && bullet8.position.x < 0) {
+					if (bullet1.position.x < 0) {
 						IsBulletShot1 = false;
-						IsBulletShot2 = false;
-						IsBulletShot3 = false;
-						IsBulletShot4 = false;
-						IsBulletShot5 = false;
-						IsBulletShot6 = false;
-						IsBulletShot7 = false;
-						IsBulletShot8 = false;
-
-						BossShotCount4 = 30;
-						BossAction4 = false;
-
 						bullet1.position.x = 1100;
 						bullet1.position.y = 0;
+						if (IsBulletShot1 == false) {
+							BossShotCount4 = 30;
+							BossAction4 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet2.position.x < 0) {
+						IsBulletShot2 = false;
 						bullet2.position.x = 1100;
 						bullet2.position.y = 10;
+						if (IsBulletShot2 == false) {
+							BossShotCount4 = 30;
+							BossAction4 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet3.position.x < 0) {
+						IsBulletShot3 = false;
 						bullet3.position.x = 1100;
 						bullet3.position.y = 50;
+						if (IsBulletShot3 == false) {
+							BossShotCount4 = 30;
+							BossAction4 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet4.position.x < 0) {
+						IsBulletShot4 = false;
 						bullet4.position.x = 1100;
 						bullet4.position.y = 90;
+						if (IsBulletShot4 == false) {
+							BossShotCount4 = 30;
+							BossAction4 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet5.position.x < 0) {
+						IsBulletShot5 = false;
 						bullet5.position.x = 1100;
 						bullet5.position.y = 130;
+						if (IsBulletShot5 == false) {
+							BossShotCount4 = 30;
+							BossAction4 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet6.position.x < 0) {
+						IsBulletShot6 = false;
 						bullet6.position.x = 1100;
 						bullet6.position.y = 170;
+						if (IsBulletShot6 == false) {
+							BossShotCount4 = 30;
+							BossAction4 = false;
+							randnum = 0;
+						}
+					}
 
 
-
-
-
+					if (bullet7.position.x < 0) {
+						IsBulletShot7 = false;
 						bullet7.position.x = 1100;
 						bullet7.position.y = 440;
+						if (IsBulletShot7 == false) {
+							BossShotCount4 = 30;
+							BossAction4 = false;
+							randnum = 0;
+						}
+					}
 
+					if (bullet8.position.x < 0) {
+						IsBulletShot8 = false;
 						bullet8.position.x = 1100;
 						bullet8.position.y = 480;
-
-						randnum = 0;
+						if (IsBulletShot8 == false) {
+							BossShotCount4 = 30;
+							BossAction4 = false;
+							randnum = 0;
+						}
 					}
 				}
 			}
 
-			//BOSSの弾の当たり判定
-			
+			//BOSSの弾の当たり判定 ここから
 
+			//===============================================IsBulletShot1の場合===================================================
+			if (IsBulletShot1 == true) {
+				PlayerDistance[0] = sqrtf((bullet1.position.x - player.position.x) * (bullet1.position.x - player.position.x) +
+					(bullet1.position.y - newposY) * (bullet1.position.y - newposY));
+				if (PlayerDistance[0] <= bullet1.radius + player.radius + bullet1.radius + player.radius) {
+					IsBulletShot1 = false;
+				}
+			}
+
+			//===============================================IsBulletShot2の場合===================================================
+			if (IsBulletShot2 == true) {
+				PlayerDistance[1] = sqrtf((bullet2.position.x - player.position.x) * (bullet2.position.x - player.position.x) +
+					(bullet2.position.y - newposY) * (bullet2.position.y - newposY));
+				if (PlayerDistance[1] <= bullet2.radius + player.radius + bullet2.radius + player.radius) {
+					IsBulletShot2 = false;
+				}
+			}
+
+			//===============================================IsBulletShot3の場合===================================================
+			if (IsBulletShot3 == true) {
+				PlayerDistance[2] = sqrtf((bullet3.position.x - player.position.x) * (bullet3.position.x - player.position.x) +
+					(bullet3.position.y - newposY) * (bullet3.position.y - newposY));
+				if (PlayerDistance[2] <= bullet3.radius + player.radius + bullet3.radius + player.radius) {
+					IsBulletShot3 = false;
+				}
+			}
+
+			//===============================================IsBulletShot4の場合===================================================
+			if (IsBulletShot4 == true) {
+				PlayerDistance[3] = sqrtf((bullet4.position.x - player.position.x) * (bullet4.position.x - player.position.x) + 
+					                      (bullet4.position.y - newposY) * (bullet4.position.y - newposY));
+				if (PlayerDistance[3] <= bullet4.radius + player.radius + bullet4.radius + player.radius) {
+					IsBulletShot4 = false;
+				}
+			}
+
+			//===============================================IsBulletShot5の場合===================================================
+			if (IsBulletShot5 == true) {
+				PlayerDistance[4] = sqrtf((bullet5.position.x - player.position.x) * (bullet5.position.x - player.position.x) +
+					(bullet5.position.y - newposY) * (bullet5.position.y - newposY));
+				if (PlayerDistance[4] <= bullet5.radius + player.radius + bullet5.radius + player.radius) {
+					IsBulletShot5 = false;
+				}
+			}
+
+			//===============================================IsBulletShot6の場合===================================================
+			if (IsBulletShot6 == true) {
+				PlayerDistance[5] = sqrtf((bullet6.position.x - player.position.x) * (bullet6.position.x - player.position.x) +
+					(bullet6.position.y - newposY) * (bullet6.position.y - newposY));
+				if (PlayerDistance[5] <= bullet6.radius + player.radius + bullet6.radius + player.radius) {
+					IsBulletShot6 = false;
+				}
+			}
+
+			//===============================================IsBulletShot7の場合===================================================
+			if (IsBulletShot7 == true) {
+				PlayerDistance[6] = sqrtf((bullet7.position.x - player.position.x) * (bullet7.position.x - player.position.x) +
+					(bullet7.position.y - newposY) * (bullet7.position.y - newposY));
+				if (PlayerDistance[6] <= bullet7.radius + player.radius + bullet7.radius + player.radius) {
+					IsBulletShot7 = false;
+				}
+			}
+
+			//===============================================IsBulletShot8の場合===================================================
+			if (IsBulletShot8 == true) {
+				PlayerDistance[7] = sqrtf((bullet8.position.x - player.position.x) * (bullet8.position.x - player.position.x) +
+					(bullet8.position.y - newposY) * (bullet8.position.y - newposY));
+				if (PlayerDistance[7] <= bullet8.radius + player.radius + bullet8.radius + player.radius) {
+					IsBulletShot8 = false;
+				}
+			}
+
+			//BOSSの弾の当たり判定 ここまで
 
 				newposY = (player.position.y - 480) * -1;//ここでplayerのY座標を決める
 				NewBossPosY = (boss.position.y - 415) * -1;//ここでplayerのY座標を決める
