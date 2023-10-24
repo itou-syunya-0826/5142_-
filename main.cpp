@@ -155,7 +155,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	int ScrollSpeedX = 5;//背景が動く速さ
 
-	int TitleHandle = Novice::LoadTexture("./Title.png");
+	int T_Handle = Novice::LoadTexture("./Title.png");
 
 	int BackGround = Novice::LoadTexture("./bg.png");
 
@@ -1648,7 +1648,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		switch (Scene) {
 
 		case TITLE:
-			Novice::DrawSprite(0, 0, TitleHandle, 1, 1, 0.0f, WHITE);
+			Novice::DrawSprite(0, 0, T_Handle, 1, 1, 0.0f, WHITE);
 
 			break;
 
