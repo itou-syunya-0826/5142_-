@@ -24,7 +24,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		GAMEOVER,
 	};
 
-	OneButton Scene = TITLE;
+	OneButton Scene = BOSS;
 
 	//Vector2構造体の宣言
 	typedef struct Vector2 {
@@ -95,13 +95,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	//Boss構造体の宣言==================================================================================
 	typedef struct Boss {
 		Vector2 position;
-		unsigned int color;
+		float radius;
 	}Boss;
 
 	//Boss構造体の初期化================================================================================
 	Boss boss{
 		{1200,400},
-		10
+		14
 	};
 
 	typedef struct BossBullet {
@@ -110,8 +110,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		float speed;
 		float radius;
 	}BossBullet;
-
-	float NewBossPosY = 0;
 
 	int ScrollSpeedX = 5;//背景が動く速さ
 
@@ -159,6 +157,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	PlayerDistance[5] = 0.0f;
 	PlayerDistance[6] = 0.0f;
 	PlayerDistance[7] = 0.0f;
+
+	float BossDistance[8];
+	BossDistance[0] = 0.0f;
+	BossDistance[1] = 0.0f;
+	BossDistance[2] = 0.0f;
+	BossDistance[3] = 0.0f;
+	BossDistance[4] = 0.0f;
+	BossDistance[5] = 0.0f;
+	BossDistance[6] = 0.0f;
+	BossDistance[7] = 0.0f;
 	
 	int BossBulletAttack[8];
 	BossBulletAttack[0] = 1;
@@ -172,9 +180,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	int BulletAttack = 1;
 	int playerHp = 15;
-	//int BossHp = 50;
-
-	//bool IsReject = false;
+	int BossHp = 50;
 
 	float amplitube = 185.0f;
 
@@ -1342,6 +1348,92 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			//BOSSの弾の当たり判定 ここまで
 
+			//跳ね返った弾の当たり判定
+			//===============================================IsBulletShot1の場合===================================================
+
+			if (IsBulletShot1 == true) {
+				BossDistance[0] = sqrtf((bullet1.position.x - boss.position.x) * (bullet1.position.x - boss.position.x) +
+					(bullet1.position.y - boss.position.y) * (bullet1.position.y - boss.position.y));
+				if (BossDistance[0] <= bullet1.radius + boss.radius + bullet1.radius + boss.radius) {
+					IsBulletShot1 = false;
+					BossHp -= BossBulletAttack[0];
+				}
+			}
+
+			//===============================================IsBulletShot2の場合===================================================
+			if (IsBulletShot2 == true) {
+				BossDistance[1] = sqrtf((bullet2.position.x - boss.position.x) * (bullet2.position.x - boss.position.x) +
+					(bullet2.position.y - boss.position.y) * (bullet2.position.y - boss.position.y));
+				if (BossDistance[1] <= bullet2.radius + boss.radius + bullet2.radius + boss.radius) {
+					IsBulletShot2 = false;
+					BossHp -= BossBulletAttack[1];
+				}
+			}
+
+			//===============================================IsBulletShot3の場合===================================================
+			if (IsBulletShot3 == true) {
+				BossDistance[2] = sqrtf((bullet3.position.x - boss.position.x) * (bullet3.position.x - boss.position.x) +
+					(bullet3.position.y - boss.position.y) * (bullet3.position.y - boss.position.y));
+				if (BossDistance[2] <= bullet3.radius + player.radius + bullet3.radius + player.radius) {
+					IsBulletShot3 = false;
+					BossHp -= BossBulletAttack[2];
+				}
+			}
+
+			//===============================================IsBulletShot4の場合===================================================
+			if (IsBulletShot4 == true) {
+				BossDistance[3] = sqrtf((bullet4.position.x - boss.position.x) * (bullet4.position.x - boss.position.x) +
+					(bullet4.position.y - boss.position.y) * (bullet4.position.y - boss.position.y));
+				if (BossDistance[3] <= bullet4.radius + boss.radius + bullet4.radius + boss.radius) {
+					IsBulletShot4 = false;
+					BossHp -= BossBulletAttack[3];
+				}
+			}
+
+			//===============================================IsBulletShot5の場合===================================================
+			if (IsBulletShot5 == true) {
+				BossDistance[4] = sqrtf((bullet5.position.x - boss.position.x) * (bullet5.position.x - boss.position.x) +
+					(bullet5.position.y - boss.position.y) * (bullet5.position.y - boss.position.y));
+				if (BossDistance[4] <= bullet5.radius + boss.radius + bullet5.radius + boss.radius) {
+					IsBulletShot5 = false;
+					BossHp -= BossBulletAttack[4];
+				}
+
+			}
+
+			//===============================================IsBulletShot6の場合===================================================
+			if (IsBulletShot6 == true) {
+				BossDistance[5] = sqrtf((bullet6.position.x - boss.position.x) * (bullet6.position.x - boss.position.x) +
+					(bullet6.position.y - boss.position.y) * (bullet6.position.y - boss.position.y));
+				if (BossDistance[5] <= bullet6.radius + boss.radius + bullet6.radius + boss.radius) {
+					IsBulletShot6 = false;
+					BossHp -= BossBulletAttack[5];
+				}
+			}
+
+
+			//===============================================IsBulletShot7の場合===================================================
+
+			if (IsBulletShot7 == true) {
+				BossDistance[6] = sqrtf((bullet7.position.x - boss.position.x) * (bullet7.position.x - boss.position.x) +
+					(bullet7.position.y - boss.position.y) * (bullet7.position.y - boss.position.y));
+				if (BossDistance[6] <= bullet7.radius + boss.radius + bullet7.radius + boss.radius) {
+					IsBulletShot7 = false;
+					BossHp -= BossBulletAttack[6];
+				}
+			}
+
+			//===============================================IsBulletShot8の場合===================================================
+			if (IsBulletShot8 == true) {
+				BossDistance[7] = sqrtf((bullet8.position.x - boss.position.x) * (bullet8.position.x - boss.position.x) +
+					(bullet8.position.y - boss.position.y) * (bullet8.position.y - boss.position.y));
+				if (BossDistance[7] <= bullet8.radius + boss.radius + bullet8.radius + boss.radius) {
+					IsBulletShot8 = false;
+					BossHp -= BossBulletAttack[7];
+				}
+			}
+		
+
 			//Bossが上下に動く挙動
 		    boss.position.y = 220 + sinf(theta) * amplitube;
 
@@ -1355,8 +1447,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			newposY = (player.position.y - 500) * -1;//ここでplayerのY座標を決める
-			NewBossPosY = (boss.position.y - 415) * -1;//ここでplayerのY座標を決める
-
 
 			break;
 
