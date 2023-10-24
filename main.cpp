@@ -1,6 +1,7 @@
 #include <Novice.h>
 #include <stdlib.h>
 #include <time.h>
+#define _USE_MATH_DEFINES
 #include <math.h>
 
 const char kWindowTitle[] = "5142";
@@ -23,7 +24,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		GAMEOVER,
 	};
 
-	OneButton Scene = TITLE;
+	OneButton Scene = BOSS;
 
 	//Vector2構造体の宣言
 	typedef struct Vector2 {
@@ -52,7 +53,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		20.0f,
 		false
 	};
-	int sample = Novice::LoadTexture("./sample.png");//プレイヤーの描画
+	int sample[4];//プレイヤーの描画
+	sample[0] = Novice::LoadTexture("./Player1.png");
+	sample[1] = Novice::LoadTexture("./Player2.png");
+	sample[2] = Novice::LoadTexture("./Player3.png");
+	sample[3] = Novice::LoadTexture("./Player4.png");
+
+	int Playertimer = 0;
+	int count = 0;
 
 	int Jampsystem = 0;
 	int IsJump = 0;
@@ -92,7 +100,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//Boss構造体の初期化================================================================================
 	Boss boss{
-		{1200,220},
+		{1200,400},
 		10
 	};
 
@@ -112,13 +120,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int BossHandle = Novice::LoadTexture("./Boss1.png");
 	//int型変数BossHandleを宣言し、LoadTextureでBOSS画像を読み込む
 
-	int BossBulletHandle = Novice::LoadTexture("./tama.png");
+	int BossBulletHandle = Novice::LoadTexture("./Boss_Bullet.png");
 	
 	//int型変数BossBulletHandleを宣言し、LoadTextureでBOSSの弾を読み込む
 
-	int BulletHandle = Novice::LoadTexture("./tama_sample_green.png");
+	int BulletHandle = Novice::LoadTexture("./Screen_Bullet.png");
 
 	int HpHandle = Novice::LoadTexture("./heart.png");
+
+	int ClearHandle = Novice::LoadTexture("./CLEAR.png");
+
+	int OverHandle = Novice::LoadTexture("./game_over.png");
 
 	int worldPosX = 640;//ワールドから見た自機のX座標を640で初期化する
 
@@ -156,6 +168,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	//bool IsReject = false;
 
+	float amplitube = 260.0f;
+
+	float theta = -1;
 	
 	//==================================================<Bossの弾の宣言と初期化>===================================================
 
@@ -305,6 +320,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			//playerの挙動
 
+			Playertimer += 1;
+
+			if (Playertimer >= 30) {
+				count += 1;
+				Playertimer = 0;
+			}
+
+			if (count == 4) {
+				count = 0;
+			}
+
 			//背景のスクロール
 
 			worldPosX += ScrollSpeedX;//ワールド座標を右方向に動かす
@@ -383,11 +409,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//ゲームオーバーに向かう処理
 			if (playerHp == 0) {
 
-				playerHp = 15;
-				scrollX = 0;
-				worldPosX = 640;
-				ScrollSpeedX = 5;
-
 				Scene = GAMEOVER;
 
 			}
@@ -444,18 +465,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				player.position.y = player.scale;
 				IsJump = 0;//元の位置に戻ったらジャンプ０
 			}
-			newposY = (player.position.y - 480) * -1;//ここでplayerのY座標を決める
-
-			//値確認
-			//Novice::ScreenPrintf(100, 100, "isJump=%d", IsJump);
-			//Novice::ScreenPrintf(100, 130, "isjampTimer=%d", isjampTimer);
-			//Novice::ScreenPrintf(100, 160, "jampTimer=%d", jampTimer);
-
-			Novice::ScreenPrintf(100, 190, "playerHp = %d", playerHp);
+			newposY = (player.position.y - 500) * -1;//ここでplayerのY座標を決める
 
 			break;
 
 		case BOSS:
+
+			Playertimer += 1;
+
+			if (Playertimer >= 30) {
+				count += 1;
+				Playertimer = 0;
+			}
+
+			if (count == 4) {
+				count = 0;
+			}
 
 			//===================================<プレイヤーのジャンプ処理>=================================
 
@@ -1297,6 +1322,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			//BOSSの弾の当たり判定 ここまで
 
+			//Bossが上下に動く挙動
+		    boss.position.y = 260 + sinf(theta) * amplitube;
+
+			theta += float(M_PI) / 60.0f;
 
 			if (playerHp == 0) {
 
@@ -1304,11 +1333,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			}
 
-			newposY = (player.position.y - 480) * -1;//ここでplayerのY座標を決める
+			newposY = (player.position.y - 500) * -1;//ここでplayerのY座標を決める
 			NewBossPosY = (boss.position.y - 415) * -1;//ここでplayerのY座標を決める
-
-			Novice::ScreenPrintf(0, 400, "timer = %d", timer);
-			Novice::ScreenPrintf(0, 420, "randnum = %d", randnum);
 
 
 			break;
@@ -1351,7 +1377,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Novice::DrawSprite(5120 - scrollX, 0, BackGround, 1.0f, 1.0f, 0.0f, WHITE);
 			Novice::DrawSprite(6400 - scrollX, 0, BackGround, 1.0f, 1.0f, 0.0f, WHITE);
 
-			Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, sample, player.scale, player.scale, 0.0f, WHITE);
+			//プレイヤーの描画
+			if (count == 0) {
+				Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, sample[0], player.scale, player.scale, 0.0f, WHITE);
+			}
+
+			if (count == 1) {
+				Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, sample[1], player.scale, player.scale, 0.0f, WHITE);
+			}
+
+			if (count == 2) {
+				Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, sample[2], player.scale, player.scale, 0.0f, WHITE);
+			}
+
+			if (count == 3) {
+				Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, sample[3], player.scale, player.scale, 0.0f, WHITE);
+			}
 
 			for (int i = 0; i < Max; i++) {
 				if (bullet[i].isShot == true) {
@@ -1370,7 +1411,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			Novice::DrawSprite(6400 - scrollX, 0, BackGround, 1.0f, 1.0f, 0.0f, WHITE);
 
-			Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, sample, player.scale, player.scale, 0.0f, WHITE);
+			//プレイヤーの描画
+			if (count == 0) {
+				Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, sample[0], player.scale, player.scale, 0.0f, WHITE);
+			}
+
+			if (count == 1) {
+				Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, sample[1], player.scale, player.scale, 0.0f, WHITE);
+			}
+
+			if (count == 2) {
+				Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, sample[2], player.scale, player.scale, 0.0f, WHITE);
+			}
+
+			if (count == 3) {
+				Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, sample[3], player.scale, player.scale, 0.0f, WHITE);
+			}
 
 			if (IsBulletShot1 == true) {
 				Novice::DrawSprite((int)bullet1.position.x, (int)bullet1.position.y, BossBulletHandle, bullet1.scale, bullet1.scale, 0.0f, WHITE);
@@ -1415,11 +1471,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			break;
 
 		case GAMECLEAR:
-			Novice::DrawBox(0, 0, 1280, 640, 0.0f, RED, kFillModeSolid);
+			Novice::DrawSprite(0, 0, ClearHandle, 1, 1, 0.0f, WHITE);
 			break;
 
 		case GAMEOVER:
-			Novice::DrawBox(0, 0, 1280, 640, 0.0f, BLACK, kFillModeSolid);
+			Novice::DrawSprite(0, 0, OverHandle, 1, 1, 0.0f, WHITE);
 			break;
 
 		}
