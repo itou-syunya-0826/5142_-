@@ -4,7 +4,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-const char kWindowTitle[] = "5142";
+const char kWindowTitle[] = "5142_クリ王ネの逆襲";
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -24,7 +24,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		GAMEOVER,
 	};
 
-	OneButton Scene = TITLE;
+	OneButton Scene = BOSS;
 
 	//Vector2構造体の宣言
 	typedef struct Vector2 {
@@ -82,6 +82,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		Vector2 position;
 		float radius;
 		float speed;//20
+
 	}PlayerBullet;
 	const int PBulletMax = 8;
 	PlayerBullet playerBullet[PBulletMax];
@@ -122,7 +123,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		bullet[i].color = WHITE;
 		bullet[i].isShot = false;
 	}
-	
+
 	int BulletCoolTimer = 10;//スクロール時の弾のクールタイムを15に設定する
 
 
@@ -136,7 +137,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		{1200,400},
 		14
 	};
-	
+
 
 
 	//bossの弾
@@ -154,7 +155,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	int ScrollSpeedX = 5;//背景が動く速さ
 
-	//int BackGround = Novice::LoadTexture("./bg.png");
+	int TitleHandle = Novice::LoadTexture("./Title.png");
+
+	int BackGround = Novice::LoadTexture("./bg.png");
 
 	int BossHandle = Novice::LoadTexture("./boss.png");
 	//int型変数BossHandleを宣言し、LoadTextureでBOSS画像を読み込む
@@ -162,12 +165,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int BossBulletHandle = Novice::LoadTexture("./Boss_Bullet.png");
 
 	int hipDropHandle = Novice::LoadTexture("./player_descent.png");
-	
+
 	//int型変数BossBulletHandleを宣言し、LoadTextureでBOSSの弾を読み込む
 
 	int BulletHandle = Novice::LoadTexture("./Screen_Bullet.png");
-
-
 
 	//画面スクロール
 	int ClearHandle = Novice::LoadTexture("./CLEAR.png");
@@ -207,7 +208,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	BossDistance[5] = 0.0f;
 	BossDistance[6] = 0.0f;
 	BossDistance[7] = 0.0f;
-	
+
 	int BossBulletAttack[8];
 	BossBulletAttack[0] = 1;
 	BossBulletAttack[1] = 1;
@@ -225,7 +226,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	float amplitube = 185.0f;
 
 	float theta = -1;
-	
+
 	//==================================================<Bossの弾の宣言と初期化>===================================================
 
 	BossBullet bullet1{
@@ -1514,91 +1515,93 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//跳ね返った弾の当たり判定
 			//===============================================IsBulletShot1の場合===================================================
 
-			if (IsBulletShot1 == true) {
-				BossDistance[0] = sqrtf((bullet1.position.x - boss.position.x) * (bullet1.position.x - boss.position.x) +
-					(bullet1.position.y - boss.position.y) * (bullet1.position.y - boss.position.y));
-				if (BossDistance[0] <= bullet1.radius + boss.radius + bullet1.radius + boss.radius) {
-					IsBulletShot1 = false;
-					BossHp -= BossBulletAttack[0];
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject1 == true && IsBulletShot1 == true) {
+					BossDistance[0] = sqrtf((playerBullet[i].position.x - boss.position.x) * (playerBullet[i].position.x - boss.position.x) +
+						(playerBullet[i].position.y - boss.position.y) * (playerBullet[i].position.x - boss.position.y));
+					if (BossDistance[0] >= playerBullet[i].radius + boss.radius + playerBullet[i].radius + boss.radius) {
+						IsBulletShot1 = false;
+						BossHp -= BossBulletAttack[0];
+					}
 				}
 			}
 
-			//===============================================IsBulletShot2の場合===================================================
-			if (IsBulletShot2 == true) {
-				BossDistance[1] = sqrtf((bullet2.position.x - boss.position.x) * (bullet2.position.x - boss.position.x) +
-					(bullet2.position.y - boss.position.y) * (bullet2.position.y - boss.position.y));
-				if (BossDistance[1] <= bullet2.radius + boss.radius + bullet2.radius + boss.radius) {
-					IsBulletShot2 = false;
-					BossHp -= BossBulletAttack[1];
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject2 == true && IsBulletShot2 == true) {
+					BossDistance[1] = sqrtf((playerBullet[i].position.x - boss.position.x) * (playerBullet[i].position.x - boss.position.x) +
+						(playerBullet[i].position.y - boss.position.y) * (playerBullet[i].position.x - boss.position.y));
+					if (BossDistance[1] >= playerBullet[i].radius + boss.radius + playerBullet[i].radius + boss.radius) {
+						IsBulletShot2 = false;
+						BossHp -= BossBulletAttack[1];
+					}
 				}
 			}
 
-			//===============================================IsBulletShot3の場合===================================================
-			if (IsBulletShot3 == true) {
-				BossDistance[2] = sqrtf((bullet3.position.x - boss.position.x) * (bullet3.position.x - boss.position.x) +
-					(bullet3.position.y - boss.position.y) * (bullet3.position.y - boss.position.y));
-				if (BossDistance[2] <= bullet3.radius + player.radius + bullet3.radius + player.radius) {
-					IsBulletShot3 = false;
-					BossHp -= BossBulletAttack[2];
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject3 == true && IsBulletShot3 == true) {
+					BossDistance[2] = sqrtf((playerBullet[i].position.x - boss.position.x) * (playerBullet[i].position.x - boss.position.x) +
+						(playerBullet[i].position.y - boss.position.y) * (playerBullet[i].position.x - boss.position.y));
+					if (BossDistance[2] >= playerBullet[i].radius + boss.radius + playerBullet[i].radius + boss.radius) {
+						IsBulletShot3 = false;
+						BossHp -= BossBulletAttack[2];
+					}
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject4 == true && IsBulletShot4 == true) {
+					BossDistance[3] = sqrtf((playerBullet[i].position.x - boss.position.x) * (playerBullet[i].position.x - boss.position.x) +
+						(playerBullet[i].position.y - boss.position.y) * (playerBullet[i].position.x - boss.position.y));
+					if (BossDistance[3] >= playerBullet[i].radius + boss.radius + playerBullet[i].radius + boss.radius) {
+						IsBulletShot4 = false;
+						BossHp -= BossBulletAttack[3];
+					}
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject5 == true && IsBulletShot5 == true) {
+					BossDistance[4] = sqrtf((playerBullet[i].position.x - boss.position.x) * (playerBullet[i].position.x - boss.position.x) +
+						(playerBullet[i].position.y - boss.position.y) * (playerBullet[i].position.x - boss.position.y));
+					if (BossDistance[4] >= playerBullet[i].radius + boss.radius + playerBullet[i].radius + boss.radius) {
+						IsBulletShot5 = false;
+						BossHp -= BossBulletAttack[4];
+					}
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject6 == true && IsBulletShot6 == true) {
+					BossDistance[5] = sqrtf((playerBullet[i].position.x - boss.position.x) * (playerBullet[i].position.x - boss.position.x) +
+						(playerBullet[i].position.y - boss.position.y) * (playerBullet[i].position.x - boss.position.y));
+					if (BossDistance[5] >= playerBullet[i].radius + boss.radius + playerBullet[i].radius + boss.radius) {
+						IsBulletShot6 = false;
+						BossHp -= BossBulletAttack[5];
+					}
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject7 == true && IsBulletShot7 == true) {
+					BossDistance[6] = sqrtf((playerBullet[i].position.x - boss.position.x) * (playerBullet[i].position.x - boss.position.x) +
+						(playerBullet[i].position.y - boss.position.y) * (playerBullet[i].position.x - boss.position.y));
+					if (BossDistance[6] >= playerBullet[i].radius + boss.radius + playerBullet[i].radius + boss.radius) {
+						IsBulletShot7 = false;
+						BossHp -= BossBulletAttack[6];
+					}
 				}
 			}
 
-			//===============================================IsBulletShot4の場合===================================================
-			if (IsBulletShot4 == true) {
-				BossDistance[3] = sqrtf((bullet4.position.x - boss.position.x) * (bullet4.position.x - boss.position.x) +
-					(bullet4.position.y - boss.position.y) * (bullet4.position.y - boss.position.y));
-				if (BossDistance[3] <= bullet4.radius + boss.radius + bullet4.radius + boss.radius) {
-					IsBulletShot4 = false;
-					BossHp -= BossBulletAttack[3];
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject8 == true && IsBulletShot8 == true) {
+					BossDistance[7] = sqrtf((playerBullet[i].position.x - boss.position.x) * (playerBullet[i].position.x - boss.position.x) +
+						(playerBullet[i].position.y - boss.position.y) * (playerBullet[i].position.x - boss.position.y));
+					if (BossDistance[7] >= playerBullet[i].radius + boss.radius + playerBullet[i].radius + boss.radius) {
+						IsBulletShot8 = false;
+						BossHp -= BossBulletAttack[7];
+					}
 				}
 			}
 
-			//===============================================IsBulletShot5の場合===================================================
-			if (IsBulletShot5 == true) {
-				BossDistance[4] = sqrtf((bullet5.position.x - boss.position.x) * (bullet5.position.x - boss.position.x) +
-					(bullet5.position.y - boss.position.y) * (bullet5.position.y - boss.position.y));
-				if (BossDistance[4] <= bullet5.radius + boss.radius + bullet5.radius + boss.radius) {
-					IsBulletShot5 = false;
-					BossHp -= BossBulletAttack[4];
-				}
-
-			}
-
-			//===============================================IsBulletShot6の場合===================================================
-			if (IsBulletShot6 == true) {
-				BossDistance[5] = sqrtf((bullet6.position.x - boss.position.x) * (bullet6.position.x - boss.position.x) +
-					(bullet6.position.y - boss.position.y) * (bullet6.position.y - boss.position.y));
-				if (BossDistance[5] <= bullet6.radius + boss.radius + bullet6.radius + boss.radius) {
-					IsBulletShot6 = false;
-					BossHp -= BossBulletAttack[5];
-				}
-			}
-
-
-			//===============================================IsBulletShot7の場合===================================================
-
-			if (IsBulletShot7 == true) {
-				BossDistance[6] = sqrtf((bullet7.position.x - boss.position.x) * (bullet7.position.x - boss.position.x) +
-					(bullet7.position.y - boss.position.y) * (bullet7.position.y - boss.position.y));
-				if (BossDistance[6] <= bullet7.radius + boss.radius + bullet7.radius + boss.radius) {
-					IsBulletShot7 = false;
-					BossHp -= BossBulletAttack[6];
-				}
-			}
-
-			//===============================================IsBulletShot8の場合===================================================
-			if (IsBulletShot8 == true) {
-				BossDistance[7] = sqrtf((bullet8.position.x - boss.position.x) * (bullet8.position.x - boss.position.x) +
-					(bullet8.position.y - boss.position.y) * (bullet8.position.y - boss.position.y));
-				if (BossDistance[7] <= bullet8.radius + boss.radius + bullet8.radius + boss.radius) {
-					IsBulletShot8 = false;
-					BossHp -= BossBulletAttack[7];
-				}
-			}
-		
 
 			//Bossが上下に動く挙動
-		    boss.position.y = 220 + sinf(theta) * amplitube;
+			boss.position.y = 220 + sinf(theta) * amplitube;
 
 			theta += float(M_PI) / 60.0f;
 
@@ -1639,11 +1642,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		switch (Scene) {
 
 		case TITLE:
-			Novice::DrawBox(0, 0, 1280, 640, 0.0f, BLUE, kFillModeSolid);
+			Novice::DrawSprite(0, 0, TitleHandle, 1, 1, 0.0f, WHITE);
 
 			break;
 
 		case STAGE1:
+
+			Novice::DrawSprite(0, 0, BackGround, 1, 1, 0.0f, WHITE);
 
 			//プレイヤーの描画
 			if (count == 0 && player.hipDrop == false) {
@@ -1681,8 +1686,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		case BOSS:
 
-			Novice::ScreenPrintf(100, 100, "hipdrop=%d", (int)player.hipDrop);
-
+			Novice::DrawSprite(0, 0, BackGround, 1, 1, 0.0f, WHITE);
 
 			//プレイヤーの描画
 			if (count == 0) {
@@ -1743,10 +1747,53 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			//ボスに向かって返す弾
 			for (int i = 0; i < PBulletMax; i++) {
-			//	if (isReject7 == true) {
+				if (isReject1 == true) {
 					Novice::DrawSprite((int)playerBullet[i].position.x, (int)playerBullet[i].position.y, PBullet, 1, 1, 0.0f, WHITE);
 
-			//	}
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject2 == true) {
+					Novice::DrawSprite((int)playerBullet[i].position.x, (int)playerBullet[i].position.y, PBullet, 1, 1, 0.0f, WHITE);
+
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject3 == true) {
+					Novice::DrawSprite((int)playerBullet[i].position.x, (int)playerBullet[i].position.y, PBullet, 1, 1, 0.0f, WHITE);
+
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject4 == true) {
+					Novice::DrawSprite((int)playerBullet[i].position.x, (int)playerBullet[i].position.y, PBullet, 1, 1, 0.0f, WHITE);
+
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject5 == true) {
+					Novice::DrawSprite((int)playerBullet[i].position.x, (int)playerBullet[i].position.y, PBullet, 1, 1, 0.0f, WHITE);
+
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject6 == true) {
+					Novice::DrawSprite((int)playerBullet[i].position.x, (int)playerBullet[i].position.y, PBullet, 1, 1, 0.0f, WHITE);
+
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject7 == true) {
+					Novice::DrawSprite((int)playerBullet[i].position.x, (int)playerBullet[i].position.y, PBullet, 1, 1, 0.0f, WHITE);
+
+				}
+			}
+
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject8 == true) {
+					Novice::DrawSprite((int)playerBullet[i].position.x, (int)playerBullet[i].position.y, PBullet, 1, 1, 0.0f, WHITE);
+
+				}
 			}
 
 
@@ -1758,6 +1805,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (Novice::IsPlayingAudio(bossHandle) == 0 || bossHandle == -1) {
 				bossHandle = Novice::PlayAudio(Boss, 1, 1.0f);
 			}
+
+			Novice::ScreenPrintf(200, 100, "BossHp = %d", BossHp);
 
 			break;
 
