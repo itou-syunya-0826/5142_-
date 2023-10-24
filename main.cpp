@@ -24,7 +24,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		GAMEOVER,
 	};
 
-	OneButton Scene = BOSS;
+	OneButton Scene = TITLE;
 
 	//Vector2構造体の宣言
 	typedef struct Vector2 {
