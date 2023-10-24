@@ -4,7 +4,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-const char kWindowTitle[] = "5142";
+const char kWindowTitle[] = "5142_クリ王ネの逆襲";
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
@@ -32,6 +32,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		float y;
 	}Vecter2;
 
+
+
 	//Player構造体の宣言
 	typedef struct Player {
 		Vector2 position;//X,100 Y,0
@@ -42,8 +44,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		float speed;//20
 		bool hipDrop;
 	}Player;
-
-	//Player構造体の初期化
 	Player player{
 		{100.0f,0.0f},
 		{0.0f,0.0f},
@@ -58,76 +58,124 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	sample[1] = Novice::LoadTexture("./Player2.png");
 	sample[2] = Novice::LoadTexture("./Player3.png");
 	sample[3] = Novice::LoadTexture("./Player4.png");
-
+	int HpHandle = Novice::LoadTexture("./heart.png");//HP
 	int Playertimer = 0;
 	int count = 0;
 
 	int Jampsystem = 0;
-	int IsJump = 0;
-	int isjampTimer = 0;
+	int IsJump = 0;//ジャンプしたら1
+	int isjampTimer = 0;//ジャンプタイマー始動変数
 	int jampTimer = 25;//ジャンプのラグ
 	float newposY = 0;
+	bool isReject1 = false;
+	bool isReject2 = false;
+	bool isReject3 = false;
+	bool isReject4 = false;
+	bool isReject5 = false;
+	bool isReject6 = false;
+	bool isReject7 = false;
+	bool isReject8 = false;
 
-	//スクロール時のBullet構造体の宣言===================================================================
+
+	//はねかえしたときの弾
+	typedef struct PlayerBullet {
+		Vector2 position;
+		float radius;
+		float speed;//20
+
+	}PlayerBullet;
+	const int PBulletMax = 8;
+	PlayerBullet playerBullet[PBulletMax];
+	for (int i = 0; i < PBulletMax; i++) {
+		playerBullet[i].position.x = -30.0f;
+		playerBullet[i].position.y = -30.0f;
+		playerBullet[i].radius = 10.0f;
+		playerBullet[i].speed = 15.0f;
+	}
+	int PBullet = Novice::LoadTexture("./Player_Bullet.png");
+
+
+	//スクロール時のBullet構造体の宣言
 	typedef struct Bullet {
 
 		Vector2 position;
 		float radius;
 		float speed;
+		float LeftX;
+		float RightX;
+		float FrontY;
+		float BackY;
 		unsigned int color;
 		bool isShot;
 
 	}Bullet;
-
-	//スクロール時のBullet構造体の初期化================================================================
-
-	const int Max = 7;//int型変数Maxを宣言し,値を7で初期化する
+	const int Max = 7;
 	Bullet bullet[Max];
 	for (int i = 0; i < Max; i++) {
 		bullet[i].position.x = 0.0f;
 		bullet[i].position.y = -10.0f;
 		bullet[i].radius = 10.0f;
 		bullet[i].speed = 7.0f;
+		bullet[i].LeftX = 0.0f;
+		bullet[i].RightX = 0.0f;
+		bullet[i].FrontY = 0.0f;
+		bullet[i].BackY = 0.0f;
 		bullet[i].color = WHITE;
 		bullet[i].isShot = false;
 	}
 
-	//Boss構造体の宣言==================================================================================
+	int BulletCoolTimer = 10;//スクロール時の弾のクールタイムを15に設定する
+
+
+
+	//Boss構造体の宣言
 	typedef struct Boss {
 		Vector2 position;
 		float radius;
 	}Boss;
-
-	//Boss構造体の初期化================================================================================
 	Boss boss{
 		{1200,400},
 		14
 	};
 
+
+
+	//bossの弾
 	typedef struct BossBullet {
 		Vector2 position;
 		float scale;
 		float speed;
 		float radius;
+		float LeftX;
+		float RightX;
+		float FrontY;
+		float BackY;
+		bool isBulletShot;
 	}BossBullet;
 
 	int ScrollSpeedX = 5;//背景が動く速さ
+
+	int TitleHandle = Novice::LoadTexture("./Title.png");
 
 	int BackGround = Novice::LoadTexture("./bg.png");
 
 	int BossHandle = Novice::LoadTexture("./boss.png");
 	//int型変数BossHandleを宣言し、LoadTextureでBOSS画像を読み込む
 
+	int BossHpHandle[3];
+	BossHpHandle[0] = Novice::LoadTexture("./Hp1.png");
+	BossHpHandle[1] = Novice::LoadTexture("./Hp2.png");
+	BossHpHandle[2] = Novice::LoadTexture("./Hp3.png");
+
 	int BossBulletHandle = Novice::LoadTexture("./Boss_Bullet.png");
 
 	int hipDropHandle = Novice::LoadTexture("./player_descent.png");
-	
+
 	//int型変数BossBulletHandleを宣言し、LoadTextureでBOSSの弾を読み込む
 
 	int BulletHandle = Novice::LoadTexture("./Screen_Bullet.png");
 
-	int HpHandle = Novice::LoadTexture("./heart.png");
-
+	//画面スクロール
 	int ClearHandle = Novice::LoadTexture("./CLEAR.png");
 
 	int OverHandle = Novice::LoadTexture("./game_over.png");
@@ -138,15 +186,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int bossHandle = -1;
 
 	int worldPosX = 640;//ワールドから見た自機のX座標を640で初期化する
-
 	int scrollX = 0;//ワールド座標のスクロール値を0で初期化する
-
 	int monitorX = worldPosX - scrollX;//ワールド座標とスクロール値を引いた値をモニターから見た自分の座標に代入する
 
-	int BulletCoolTimer = 10;
-	//スクロール時の弾のクールタイムを15に設定する
+
 
 	float Distance = 0.0f;//弾の当たり判定用の変数を用意
+
 
 	float PlayerDistance[8];
 	PlayerDistance[0] = 0.0f;
@@ -167,7 +213,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	BossDistance[5] = 0.0f;
 	BossDistance[6] = 0.0f;
 	BossDistance[7] = 0.0f;
-	
+
 	int BossBulletAttack[8];
 	BossBulletAttack[0] = 1;
 	BossBulletAttack[1] = 1;
@@ -180,12 +226,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	int BulletAttack = 1;
 	int playerHp = 15;
-	int BossHp = 50;
+	int BossHp = 30;
 
 	float amplitube = 185.0f;
 
 	float theta = -1;
-	
+
 	//==================================================<Bossの弾の宣言と初期化>===================================================
 
 	BossBullet bullet1{
@@ -265,22 +311,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	bool BossAction3 = true;
 	bool BossAction4 = true;
 
+
+
+
+
 	time_t Time = time(nullptr);
 
 	srand((unsigned int)Time);
 
 	int randnum = 0;
 
-	int timer = 50;
+	int bossBulletTimer = 50;
 
-	/*bool isReject1 = false;
-	bool isReject2 = false;
-	bool isReject3 = false;
-	bool isReject4 = false;
-	bool isReject5 = false;
-	bool isReject6 = false;
-	bool isReject7 = false;
-	bool isReject8 = false;*/
+
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -324,6 +367,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			scrollX = 0;
 			ScrollSpeedX = 5;
 			playerHp = 15;
+			BossHp = 30;
 
 			if (keys[DIK_SPACE] && preKeys[DIK_SPACE] == false) {
 				Scene = STAGE1;
@@ -332,7 +376,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		case STAGE1:
 
-			//playerの挙動
+
+
+
 
 			Playertimer += 1;
 
@@ -388,10 +434,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
-			for (int i = 0; i < Max; i++) {//for文処理
-				if (bullet[i].isShot == true) {//bullet[i].isShotがtrueだったら
-					bullet[i].position.x -= bullet[i].speed;
-					//スクロール時の弾を左方向に動かす
+			for (int i = 0; i < Max; i++) {
+				if (bullet[i].isShot == true) {//弾を打ったら
+					bullet[i].position.x -= bullet[i].speed;//スクロール時の弾を左方向に動かす
 
 					if (bullet[i].position.x <= -20) {//スクロール時の弾のX座標が0まで到達したら
 						bullet[i].isShot = false;//スクロール時の弾のフラグをfalseにする
@@ -485,7 +530,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				player.position.y = player.scale;
 				IsJump = 0;//元の位置に戻ったらジャンプ０
 			}
+
+
+
 			newposY = (player.position.y - 500) * -1;//ここでplayerのY座標を決める
+			if (player.position.y <= 5) {
+				player.hipDrop = false;
+			}
 
 			break;
 
@@ -561,13 +612,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				IsJump = 0;//元の位置に戻ったらジャンプ０
 			}
 
+
+
 			//==========================================<Bossの弾の更新処理 ここから>==========================================
 
-			if (timer > 0) {
-				timer--;//タイマーが０になるまでマイナスする
+			if (bossBulletTimer > 0) {
+				bossBulletTimer--;//タイマーが０になるまでマイナスする
 			}
 
-			if (timer <= 0) {
+			if (bossBulletTimer <= 0) {
 				if (randnum == 0) {
 					randnum = rand() % 4 + 1;//タイマーが０以下になった時にrandnumが０だったらrandnum1.2.3.4のどれかになる
 				}
@@ -580,7 +633,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (randnum == 1) {//rand1が呼ばれたときにこの動作をする
 				BossAction1 = true;
 				if (BossAction1 == true) {//一つ目の
-					timer = 30;
+					bossBulletTimer = 30;
 
 					if (IsBoss == true) {
 						BossShotCount1--;
@@ -751,7 +804,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (randnum == 2) {//rand2が呼ばれたときにこの動作をする
 				BossAction2 = true;
 				if (BossAction2 == true) {//二つ目の
-					timer = 30;
+					bossBulletTimer = 30;
 
 					if (IsBoss == true) {
 						BossShotCount2--;
@@ -921,7 +974,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (randnum == 3) {//rand3が呼ばれたときにこの動作をする
 				BossAction3 = true;
 				if (BossAction3 == true) {//三つ目の
-					timer = 30;
+					bossBulletTimer = 30;
 
 					if (IsBoss == true) {
 						BossShotCount3--;
@@ -1094,7 +1147,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (randnum == 4) {//rand4が呼ばれたときにこの動作をする
 				BossAction4 = true;
 				if (BossAction4 == true) {//四つ目の
-					timer = 30;
+					bossBulletTimer = 30;
 
 					if (IsBoss == true) {
 						BossShotCount4--;
@@ -1211,7 +1264,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 							randnum = 0;
 						}
 					}
-					
+
 
 					if (bullet5.position.x < 0) {
 						IsBulletShot5 = false;
@@ -1267,11 +1320,28 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (IsBulletShot1 == true) {
 				PlayerDistance[0] = sqrtf((bullet1.position.x - player.position.x) * (bullet1.position.x - player.position.x) +
 					(bullet1.position.y - newposY) * (bullet1.position.y - newposY));
-				if (PlayerDistance[0] <= bullet1.radius + player.radius + bullet1.radius + player.radius) {
+				if (PlayerDistance[0] <= bullet1.radius + player.radius + bullet1.radius + player.radius) {//当たったら
 					IsBulletShot1 = false;
-					playerHp = playerHp - BossBulletAttack[0];
+					if (player.hipDrop == true) {//ヒップドロップしてる間なら
+						isReject1 = true;
+						playerBullet[0].position.x = player.position.x;//代入
+						playerBullet[0].position.y = newposY;//代入
+					}
+					else {
+						playerHp = playerHp - BossBulletAttack[0];
+
+					}
 				}
 			}
+
+			if (isReject1 == true) {
+				playerBullet[0].position.x += player.speed;//右に跳ね返す
+			}
+
+			if (playerBullet[0].position.x >= 1430) {
+				isReject1 = false;
+			}
+
 
 			//===============================================IsBulletShot2の場合===================================================
 			if (IsBulletShot2 == true) {
@@ -1280,7 +1350,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (PlayerDistance[1] <= bullet2.radius + player.radius + bullet2.radius + player.radius) {
 					IsBulletShot2 = false;
 					playerHp = playerHp - BossBulletAttack[1];
+					if (player.hipDrop == true) {//ヒップドロップしてる間なら
+						isReject2 = true;
+						playerHp++;
+						playerBullet[1].position.x = player.position.x;//代入
+						playerBullet[1].position.y = newposY;//代入
+					}
 				}
+			}
+
+			if (isReject2 == true) {
+				playerBullet[1].position.x += player.speed;//右に跳ね返す
+			}
+
+			if (playerBullet[1].position.x >= 1430) {
+				isReject2 = false;
 			}
 
 			//===============================================IsBulletShot3の場合===================================================
@@ -1290,7 +1374,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (PlayerDistance[2] <= bullet3.radius + player.radius + bullet3.radius + player.radius) {
 					IsBulletShot3 = false;
 					playerHp = playerHp - BossBulletAttack[2];
-				}	
+					if (player.hipDrop == true) {//ヒップドロップしてる間なら
+						isReject3 = true;
+						playerHp++;
+						playerBullet[2].position.x = player.position.x;//代入
+						playerBullet[2].position.y = newposY;//代入
+					}
+				}
+			}
+
+			if (isReject3 == true) {
+				playerBullet[2].position.x += player.speed;//右に跳ね返す
+			}
+
+			if (playerBullet[2].position.x >= 1430) {
+				isReject3 = false;
 			}
 
 			//===============================================IsBulletShot4の場合===================================================
@@ -1300,7 +1398,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (PlayerDistance[3] <= bullet4.radius + player.radius + bullet4.radius + player.radius) {
 					IsBulletShot4 = false;
 					playerHp = playerHp - BossBulletAttack[3];
+					if (player.hipDrop == true) {//ヒップドロップしてる間なら
+						isReject4 = true;
+						playerHp++;
+						playerBullet[3].position.x = player.position.x;//代入
+						playerBullet[3].position.y = newposY;//代入
+					}
 				}
+			}
+
+			if (isReject4 == true) {
+				playerBullet[3].position.x += player.speed;//右に跳ね返す
+			}
+
+			if (playerBullet[3].position.x >= 1430) {
+				isReject4 = false;
 			}
 
 			//===============================================IsBulletShot5の場合===================================================
@@ -1310,8 +1422,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (PlayerDistance[4] <= bullet5.radius + player.radius + bullet5.radius + player.radius) {
 					IsBulletShot5 = false;
 					playerHp = playerHp - BossBulletAttack[4];
+					if (player.hipDrop == true) {//ヒップドロップしてる間なら
+						isReject5 = true;
+						playerHp++;
+						playerBullet[4].position.x = player.position.x;//代入
+						playerBullet[4].position.y = newposY;//代入
+					}
 				}
-				
+			}
+
+			if (isReject5 == true) {
+				playerBullet[4].position.x += player.speed;//右に跳ね返す
+			}
+
+			if (playerBullet[1].position.x >= 1430) {
+				isReject5 = false;
 			}
 
 			//===============================================IsBulletShot6の場合===================================================
@@ -1321,9 +1446,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (PlayerDistance[5] <= bullet6.radius + player.radius + bullet6.radius + player.radius) {
 					IsBulletShot6 = false;
 					playerHp = playerHp - BossBulletAttack[5];
+					if (player.hipDrop == true) {//ヒップドロップしてる間なら
+						isReject6 = true;
+						playerHp++;
+						playerBullet[5].position.x = player.position.x;//代入
+						playerBullet[5].position.y = newposY;//代入
+					}
 				}
 			}
 
+			if (isReject6 == true) {
+				playerBullet[5].position.x += player.speed;//右に跳ね返す
+			}
+
+			if (playerBullet[5].position.x >= 1430) {
+				isReject6 = false;
+			}
 
 			//===============================================IsBulletShot7の場合===================================================
 
@@ -1333,7 +1471,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (PlayerDistance[6] <= bullet7.radius + player.radius + bullet7.radius + player.radius) {
 					IsBulletShot7 = false;
 					playerHp = playerHp - BossBulletAttack[6];
+					if (player.hipDrop == true) {//ヒップドロップしてる間なら
+						isReject7 = true;
+						playerHp++;
+						playerBullet[6].position.x = player.position.x;//代入
+						playerBullet[6].position.y = newposY;//代入
+					}
 				}
+			}
+
+			if (isReject7 == true) {
+				playerBullet[6].position.x += player.speed;//右に跳ね返す
+			}
+
+			if (playerBullet[6].position.x >= 1430) {
+				isReject7 = false;
 			}
 
 			//===============================================IsBulletShot8の場合===================================================
@@ -1343,7 +1495,25 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (PlayerDistance[7] <= bullet8.radius + player.radius + bullet8.radius + player.radius) {
 					IsBulletShot8 = false;
 					playerHp = playerHp - BossBulletAttack[7];
+					if (player.hipDrop == true) {//ヒップドロップしてる間なら
+						isReject8 = true;
+						playerHp++;
+						playerBullet[7].position.x = player.position.x;//代入
+						playerBullet[7].position.y = newposY;//代入
+					}
 				}
+			}
+
+			if (isReject8 == true) {
+				playerBullet[7].position.x += player.speed;//右に跳ね返す
+			}
+
+			if (playerBullet[7].position.x >= 1430) {
+				isReject8 = false;
+			}
+
+			if (player.position.y <= 5) {
+				player.hipDrop = false;
 			}
 
 			//BOSSの弾の当たり判定 ここまで
@@ -1351,91 +1521,93 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//跳ね返った弾の当たり判定
 			//===============================================IsBulletShot1の場合===================================================
 
-			if (IsBulletShot1 == true) {
-				BossDistance[0] = sqrtf((bullet1.position.x - boss.position.x) * (bullet1.position.x - boss.position.x) +
-					(bullet1.position.y - boss.position.y) * (bullet1.position.y - boss.position.y));
-				if (BossDistance[0] <= bullet1.radius + boss.radius + bullet1.radius + boss.radius) {
-					IsBulletShot1 = false;
-					BossHp -= BossBulletAttack[0];
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject1 == true && IsBulletShot1 == true) {
+					BossDistance[0] = sqrtf((playerBullet[i].position.x - boss.position.x) * (playerBullet[i].position.x - boss.position.x) +
+						(playerBullet[i].position.y - boss.position.y) * (playerBullet[i].position.x - boss.position.y));
+					if (BossDistance[0] >= playerBullet[i].radius + boss.radius + playerBullet[i].radius + boss.radius) {
+						IsBulletShot1 = false;
+						BossHp -= BossBulletAttack[0];
+					}
 				}
 			}
 
-			//===============================================IsBulletShot2の場合===================================================
-			if (IsBulletShot2 == true) {
-				BossDistance[1] = sqrtf((bullet2.position.x - boss.position.x) * (bullet2.position.x - boss.position.x) +
-					(bullet2.position.y - boss.position.y) * (bullet2.position.y - boss.position.y));
-				if (BossDistance[1] <= bullet2.radius + boss.radius + bullet2.radius + boss.radius) {
-					IsBulletShot2 = false;
-					BossHp -= BossBulletAttack[1];
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject2 == true && IsBulletShot2 == true) {
+					BossDistance[1] = sqrtf((playerBullet[i].position.x - boss.position.x) * (playerBullet[i].position.x - boss.position.x) +
+						(playerBullet[i].position.y - boss.position.y) * (playerBullet[i].position.x - boss.position.y));
+					if (BossDistance[1] >= playerBullet[i].radius + boss.radius + playerBullet[i].radius + boss.radius) {
+						IsBulletShot2 = false;
+						BossHp -= BossBulletAttack[1];
+					}
 				}
 			}
 
-			//===============================================IsBulletShot3の場合===================================================
-			if (IsBulletShot3 == true) {
-				BossDistance[2] = sqrtf((bullet3.position.x - boss.position.x) * (bullet3.position.x - boss.position.x) +
-					(bullet3.position.y - boss.position.y) * (bullet3.position.y - boss.position.y));
-				if (BossDistance[2] <= bullet3.radius + player.radius + bullet3.radius + player.radius) {
-					IsBulletShot3 = false;
-					BossHp -= BossBulletAttack[2];
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject3 == true && IsBulletShot3 == true) {
+					BossDistance[2] = sqrtf((playerBullet[i].position.x - boss.position.x) * (playerBullet[i].position.x - boss.position.x) +
+						(playerBullet[i].position.y - boss.position.y) * (playerBullet[i].position.x - boss.position.y));
+					if (BossDistance[2] >= playerBullet[i].radius + boss.radius + playerBullet[i].radius + boss.radius) {
+						IsBulletShot3 = false;
+						BossHp -= BossBulletAttack[2];
+					}
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject4 == true && IsBulletShot4 == true) {
+					BossDistance[3] = sqrtf((playerBullet[i].position.x - boss.position.x) * (playerBullet[i].position.x - boss.position.x) +
+						(playerBullet[i].position.y - boss.position.y) * (playerBullet[i].position.x - boss.position.y));
+					if (BossDistance[3] >= playerBullet[i].radius + boss.radius + playerBullet[i].radius + boss.radius) {
+						IsBulletShot4 = false;
+						BossHp -= BossBulletAttack[3];
+					}
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject5 == true && IsBulletShot5 == true) {
+					BossDistance[4] = sqrtf((playerBullet[i].position.x - boss.position.x) * (playerBullet[i].position.x - boss.position.x) +
+						(playerBullet[i].position.y - boss.position.y) * (playerBullet[i].position.x - boss.position.y));
+					if (BossDistance[4] >= playerBullet[i].radius + boss.radius + playerBullet[i].radius + boss.radius) {
+						IsBulletShot5 = false;
+						BossHp -= BossBulletAttack[4];
+					}
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject6 == true && IsBulletShot6 == true) {
+					BossDistance[5] = sqrtf((playerBullet[i].position.x - boss.position.x) * (playerBullet[i].position.x - boss.position.x) +
+						(playerBullet[i].position.y - boss.position.y) * (playerBullet[i].position.x - boss.position.y));
+					if (BossDistance[5] >= playerBullet[i].radius + boss.radius + playerBullet[i].radius + boss.radius) {
+						IsBulletShot6 = false;
+						BossHp -= BossBulletAttack[5];
+					}
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject7 == true && IsBulletShot7 == true) {
+					BossDistance[6] = sqrtf((playerBullet[i].position.x - boss.position.x) * (playerBullet[i].position.x - boss.position.x) +
+						(playerBullet[i].position.y - boss.position.y) * (playerBullet[i].position.x - boss.position.y));
+					if (BossDistance[6] >= playerBullet[i].radius + boss.radius + playerBullet[i].radius + boss.radius) {
+						IsBulletShot7 = false;
+						BossHp -= BossBulletAttack[6];
+					}
 				}
 			}
 
-			//===============================================IsBulletShot4の場合===================================================
-			if (IsBulletShot4 == true) {
-				BossDistance[3] = sqrtf((bullet4.position.x - boss.position.x) * (bullet4.position.x - boss.position.x) +
-					(bullet4.position.y - boss.position.y) * (bullet4.position.y - boss.position.y));
-				if (BossDistance[3] <= bullet4.radius + boss.radius + bullet4.radius + boss.radius) {
-					IsBulletShot4 = false;
-					BossHp -= BossBulletAttack[3];
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject8 == true && IsBulletShot8 == true) {
+					BossDistance[7] = sqrtf((playerBullet[i].position.x - boss.position.x) * (playerBullet[i].position.x - boss.position.x) +
+						(playerBullet[i].position.y - boss.position.y) * (playerBullet[i].position.x - boss.position.y));
+					if (BossDistance[7] >= playerBullet[i].radius + boss.radius + playerBullet[i].radius + boss.radius) {
+						IsBulletShot8 = false;
+						BossHp -= BossBulletAttack[7];
+					}
 				}
 			}
 
-			//===============================================IsBulletShot5の場合===================================================
-			if (IsBulletShot5 == true) {
-				BossDistance[4] = sqrtf((bullet5.position.x - boss.position.x) * (bullet5.position.x - boss.position.x) +
-					(bullet5.position.y - boss.position.y) * (bullet5.position.y - boss.position.y));
-				if (BossDistance[4] <= bullet5.radius + boss.radius + bullet5.radius + boss.radius) {
-					IsBulletShot5 = false;
-					BossHp -= BossBulletAttack[4];
-				}
-
-			}
-
-			//===============================================IsBulletShot6の場合===================================================
-			if (IsBulletShot6 == true) {
-				BossDistance[5] = sqrtf((bullet6.position.x - boss.position.x) * (bullet6.position.x - boss.position.x) +
-					(bullet6.position.y - boss.position.y) * (bullet6.position.y - boss.position.y));
-				if (BossDistance[5] <= bullet6.radius + boss.radius + bullet6.radius + boss.radius) {
-					IsBulletShot6 = false;
-					BossHp -= BossBulletAttack[5];
-				}
-			}
-
-
-			//===============================================IsBulletShot7の場合===================================================
-
-			if (IsBulletShot7 == true) {
-				BossDistance[6] = sqrtf((bullet7.position.x - boss.position.x) * (bullet7.position.x - boss.position.x) +
-					(bullet7.position.y - boss.position.y) * (bullet7.position.y - boss.position.y));
-				if (BossDistance[6] <= bullet7.radius + boss.radius + bullet7.radius + boss.radius) {
-					IsBulletShot7 = false;
-					BossHp -= BossBulletAttack[6];
-				}
-			}
-
-			//===============================================IsBulletShot8の場合===================================================
-			if (IsBulletShot8 == true) {
-				BossDistance[7] = sqrtf((bullet8.position.x - boss.position.x) * (bullet8.position.x - boss.position.x) +
-					(bullet8.position.y - boss.position.y) * (bullet8.position.y - boss.position.y));
-				if (BossDistance[7] <= bullet8.radius + boss.radius + bullet8.radius + boss.radius) {
-					IsBulletShot8 = false;
-					BossHp -= BossBulletAttack[7];
-				}
-			}
-		
 
 			//Bossが上下に動く挙動
-		    boss.position.y = 220 + sinf(theta) * amplitube;
+			boss.position.y = 220 + sinf(theta) * amplitube;
 
 			theta += float(M_PI) / 60.0f;
 
@@ -1476,17 +1648,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		switch (Scene) {
 
 		case TITLE:
-			Novice::DrawBox(0, 0, 1280, 640, 0.0f, BLUE, kFillModeSolid);
+			Novice::DrawSprite(0, 0, TitleHandle, 1, 1, 0.0f, WHITE);
 
 			break;
 
 		case STAGE1:
-			Novice::DrawSprite(0 - scrollX, 0, BackGround, 1.0f, 1.0f, 0.0f, WHITE);
-			Novice::DrawSprite(1280 - scrollX, 0, BackGround, 1.0f, 1.0f, 0.0f, WHITE);
-			Novice::DrawSprite(2560 - scrollX, 0, BackGround, 1.0f, 1.0f, 0.0f, WHITE);
-			Novice::DrawSprite(3840 - scrollX, 0, BackGround, 1.0f, 1.0f, 0.0f, WHITE);
-			Novice::DrawSprite(5120 - scrollX, 0, BackGround, 1.0f, 1.0f, 0.0f, WHITE);
-			Novice::DrawSprite(6400 - scrollX, 0, BackGround, 1.0f, 1.0f, 0.0f, WHITE);
+
+			Novice::DrawSprite(0, 0, BackGround, 1, 1, 0.0f, WHITE);
 
 			//プレイヤーの描画
 			if (count == 0 && player.hipDrop == false) {
@@ -1524,7 +1692,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		case BOSS:
 
-			Novice::DrawSprite(6400 - scrollX, 0, BackGround, 1.0f, 1.0f, 0.0f, WHITE);
+			Novice::DrawSprite(0, 0, BackGround, 1, 1, 0.0f, WHITE);
 
 			//プレイヤーの描画
 			if (count == 0) {
@@ -1583,6 +1751,69 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				Novice::DrawSprite((int)boss.position.x, (int)boss.position.y, BossHandle, 1.0f, 1.0f, 0.0f, WHITE);
 			}
 
+			//ボスに向かって返す弾
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject1 == true) {
+					Novice::DrawSprite((int)playerBullet[i].position.x, (int)playerBullet[i].position.y, PBullet, 1, 1, 0.0f, WHITE);
+
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject2 == true) {
+					Novice::DrawSprite((int)playerBullet[i].position.x, (int)playerBullet[i].position.y, PBullet, 1, 1, 0.0f, WHITE);
+
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject3 == true) {
+					Novice::DrawSprite((int)playerBullet[i].position.x, (int)playerBullet[i].position.y, PBullet, 1, 1, 0.0f, WHITE);
+
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject4 == true) {
+					Novice::DrawSprite((int)playerBullet[i].position.x, (int)playerBullet[i].position.y, PBullet, 1, 1, 0.0f, WHITE);
+
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject5 == true) {
+					Novice::DrawSprite((int)playerBullet[i].position.x, (int)playerBullet[i].position.y, PBullet, 1, 1, 0.0f, WHITE);
+
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject6 == true) {
+					Novice::DrawSprite((int)playerBullet[i].position.x, (int)playerBullet[i].position.y, PBullet, 1, 1, 0.0f, WHITE);
+
+				}
+			}
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject7 == true) {
+					Novice::DrawSprite((int)playerBullet[i].position.x, (int)playerBullet[i].position.y, PBullet, 1, 1, 0.0f, WHITE);
+
+				}
+			}
+
+			for (int i = 0; i < PBulletMax; i++) {
+				if (isReject8 == true) {
+					Novice::DrawSprite((int)playerBullet[i].position.x, (int)playerBullet[i].position.y, PBullet, 1, 1, 0.0f, WHITE);
+
+				}
+			}
+
+			if (BossHp == 30) {
+				Novice::DrawSprite(0, 0, BossHpHandle[0], 1, 1, 0.0f, WHITE);
+			}
+
+			if (BossHp == 15) {
+				Novice::DrawSprite(0, 0, BossHpHandle[1], 1, 1, 0.0f, WHITE);
+			}
+
+			if (BossHp == 0) {
+				Novice::DrawSprite(0, 0, BossHpHandle[2], 1, 1, 0.0f, WHITE);
+			}
+
 			for (int i = 0; i < playerHp; i++) {
 				Novice::DrawSprite(i * 32, 0, HpHandle, 1, 1, 0.0f, WHITE);
 			}
@@ -1590,6 +1821,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (Novice::IsPlayingAudio(bossHandle) == 0 || bossHandle == -1) {
 				bossHandle = Novice::PlayAudio(Boss, 1, 1.0f);
 			}
+
+			Novice::ScreenPrintf(200, 100, "BossHp = %d", BossHp);
 
 			break;
 
