@@ -24,7 +24,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		GAMEOVER,
 	};
 
-	OneButton Scene = BOSS;
+	OneButton Scene = TITLE;
 
 	//Vector2構造体の宣言
 	typedef struct Vector2 {
@@ -117,10 +117,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	int BackGround = Novice::LoadTexture("./bg.png");
 
-	int BossHandle = Novice::LoadTexture("./Boss1.png");
+	int BossHandle = Novice::LoadTexture("./boss.png");
 	//int型変数BossHandleを宣言し、LoadTextureでBOSS画像を読み込む
 
 	int BossBulletHandle = Novice::LoadTexture("./Boss_Bullet.png");
+
+	int hipDropHandle = Novice::LoadTexture("./player_descent.png");
 	
 	//int型変数BossBulletHandleを宣言し、LoadTextureでBOSSの弾を読み込む
 
@@ -131,6 +133,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int ClearHandle = Novice::LoadTexture("./CLEAR.png");
 
 	int OverHandle = Novice::LoadTexture("./game_over.png");
+
+	//音声の読み込み
+	int Boss = Novice::LoadAudio("./Stage1.mp3");
+
+	int bossHandle = -1;
 
 	int worldPosX = 640;//ワールドから見た自機のX座標を640で初期化する
 
@@ -165,10 +172,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	int BulletAttack = 1;
 	int playerHp = 15;
+	//int BossHp = 50;
 
 	//bool IsReject = false;
 
-	float amplitube = 260.0f;
+	float amplitube = 185.0f;
 
 	float theta = -1;
 	
@@ -448,10 +456,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						if (player.hipDrop == true) {
 							player.position.y -= player.speed;
 						}
-
 					}
 				}
 
+			}
+
+			if (player.hipDrop) {
+				if (!keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {
+					player.hipDrop = false;
+					count = 0;
+				}
 			}
 
 			//ジャンプしたら
@@ -514,12 +528,18 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 						player.position.y -= player.speed;
 
-
 						player.hipDrop = true;
 						if (player.hipDrop == true) {
 							player.position.y -= player.speed;
 						}
 					}
+				}
+			}
+
+			if (player.hipDrop) {
+				if (!keys[DIK_SPACE] && !preKeys[DIK_SPACE]) {
+					player.hipDrop = false;
+					count = 0;
 				}
 			}
 
@@ -1323,13 +1343,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			//BOSSの弾の当たり判定 ここまで
 
 			//Bossが上下に動く挙動
-		    boss.position.y = 260 + sinf(theta) * amplitube;
+		    boss.position.y = 220 + sinf(theta) * amplitube;
 
 			theta += float(M_PI) / 60.0f;
 
 			if (playerHp == 0) {
 
 				Scene = GAMEOVER;
+				Novice::StopAudio(bossHandle);
 
 			}
 
@@ -1378,20 +1399,24 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Novice::DrawSprite(6400 - scrollX, 0, BackGround, 1.0f, 1.0f, 0.0f, WHITE);
 
 			//プレイヤーの描画
-			if (count == 0) {
+			if (count == 0 && player.hipDrop == false) {
 				Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, sample[0], player.scale, player.scale, 0.0f, WHITE);
 			}
 
-			if (count == 1) {
+			if (count == 1 && player.hipDrop == false) {
 				Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, sample[1], player.scale, player.scale, 0.0f, WHITE);
 			}
 
-			if (count == 2) {
+			if (count == 2 && player.hipDrop == false) {
 				Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, sample[2], player.scale, player.scale, 0.0f, WHITE);
 			}
 
-			if (count == 3) {
+			if (count == 3 && player.hipDrop == false) {
 				Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, sample[3], player.scale, player.scale, 0.0f, WHITE);
+			}
+
+			if (player.hipDrop == true) {
+				Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, hipDropHandle, player.scale, player.scale, 0.0f, WHITE);
 			}
 
 			for (int i = 0; i < Max; i++) {
@@ -1426,6 +1451,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			if (count == 3) {
 				Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, sample[3], player.scale, player.scale, 0.0f, WHITE);
+			}
+
+			if (player.hipDrop == true) {
+				Novice::DrawSprite((int)player.position.x - (int)player.radius, (int)newposY - (int)player.radius, hipDropHandle, player.scale, player.scale, 0.0f, WHITE);
 			}
 
 			if (IsBulletShot1 == true) {
@@ -1466,6 +1495,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			for (int i = 0; i < playerHp; i++) {
 				Novice::DrawSprite(i * 32, 0, HpHandle, 1, 1, 0.0f, WHITE);
+			}
+
+			if (Novice::IsPlayingAudio(bossHandle) == 0 || bossHandle == -1) {
+				bossHandle = Novice::PlayAudio(Boss, 1, 1.0f);
 			}
 
 			break;
